@@ -287,6 +287,31 @@ tr.late td:first-child { box-shadow: inset 4px 0 0 var(--late); }
 .board thead th.today { background: var(--brand); color: var(--brand-ink); }
 .board th.rowh { position: sticky; left: 0; background: var(--surface); z-index: 1; width: 92px; font-size: 12px; color: var(--fg); text-transform: none; letter-spacing: 0; }
 .board td.today { background: var(--brand-soft); }
+
+.gantt { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.g-head, .g-row { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.g-head span { text-align: center; padding: 6px 0; font-size: 11px; text-transform: uppercase; letter-spacing: .03em; color: var(--muted); background: var(--surface-2); border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); line-height: 1.2; }
+.g-head span:last-child, .g-cell:nth-child(7) { border-right: 0; }
+.g-head span b { display: block; font-size: 16px; color: var(--fg); letter-spacing: 0; }
+.g-head span.today { background: var(--brand); color: var(--brand-ink); }
+.g-head span.today b { color: var(--brand-ink); }
+.g-row { min-height: 70px; }
+.g-cell { grid-row: 1; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.g-cell.today { background: var(--brand-soft); }
+.g-blk, .g-lbl { grid-row: 1; position: relative; z-index: 1; min-width: 0; font: inherit; color: var(--fg); text-align: left; cursor: pointer; }
+.g-blk { margin: 6px 3px; padding: 6px 8px; border: 1px solid color-mix(in srgb, var(--c) 40%, var(--line)); border-left: 5px solid var(--c); border-radius: 10px; background: color-mix(in srgb, var(--c) 13%, var(--surface)); display: grid; gap: 1px; align-content: center; box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+.g-blk.late { --c: var(--late); background: var(--late-soft); }
+.g-blk.curto { background: var(--c); border-color: var(--c); color: #fff; place-items: center; text-align: center; font-weight: 700; font-size: 12px; padding: 4px 2px; }
+.g-blk.curto.late { background: var(--late); }
+.g-blk.cont-l { margin-left: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+.g-blk.cont-r { margin-right: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.g-blk b, .g-lbl b { font-size: 13.5px; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.g-blk small, .g-lbl small { font-size: 11.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.g-blk.late small, .g-lbl.late small { color: var(--late); }
+.g-lbl { background: none; border: 0; padding: 6px 8px; display: grid; gap: 1px; align-content: center; }
+.g-lbl.esq { text-align: right; }
+.g-sec { padding: 8px 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); background: var(--surface-2); border-bottom: 1px solid var(--line); }
+.g-vazio { padding: 14px 10px; color: var(--muted); font-size: 13px; border-bottom: 1px solid var(--line); }
 .chipd { display: block; width: 100%; text-align: left; border: 0; border-radius: 7px; padding: 4px 6px; margin-bottom: 4px; font-size: 12px; font-weight: 600; line-height: 1.25; background: var(--surface-2); color: var(--fg); }
 .chipd small { display: block; font-weight: 500; color: var(--muted); }
 .chipd.late { background: var(--late-soft); color: var(--late); }
@@ -303,6 +328,28 @@ tr.late td:first-child { box-shadow: inset 4px 0 0 var(--late); }
 .viewer p small { display: block; color: #bbb; margin-top: 2px; }
 .viewer button { position: absolute; top: 14px; right: 14px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(255,255,255,.16); color: #fff; display: grid; place-items: center; cursor: pointer; }
 .viewer button svg { width: 22px; height: 22px; }
+.aviso-tit { font-size: 28px; line-height: 1.1; color: var(--brand); margin-top: 4px; }
+.aviso-sub { margin: -6px 0 0; color: var(--muted); font-size: 14px; }
+.aviso-bloco { display: grid; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 8px; }
+.aviso-bloco .card { border: 0; padding: 6px 8px; }
+.board td.bar { padding: 3px 4px; }
+.chipd.span { border-left: 4px solid var(--c, var(--brand)); }
+.agenda-sem { display: grid; gap: 6px; }
+#printOrc { display: none; }
+@media print {
+  body > *:not(#printOrc) { display: none !important; }
+  #printOrc { display: block !important; color: #000; background: #fff; }
+  .po { font-family: Arial, sans-serif; max-width: 680px; margin: 0 auto; padding: 24px; }
+  .po-top { display: flex; justify-content: space-between; border-bottom: 3px solid #009b52; padding-bottom: 8px; font-size: 20px; }
+  .po-top span { color: #009b52; font-weight: 700; }
+  .po h1 { font-size: 24px; margin: 18px 0 6px; }
+  .po table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+  .po th, .po td { border-bottom: 1px solid #ccc; padding: 8px 4px; text-align: left; }
+  .po .r { text-align: right; white-space: nowrap; }
+  .po tfoot td { font-weight: 700; font-size: 18px; border-top: 2px solid #000; }
+  .po small { color: #555; }
+  .po-fim { margin-top: 24px; }
+}
 </style>
 </head>
 <body>
@@ -352,7 +399,7 @@ function calcLaser(q) {
   const custo = q.m2 * m[1] * (1 + uso + prog + mont) + q.minutos + taxa + cola;
   return { cf: ROUND1(custo * 1.9), rev: ROUND1(custo * 1.2) };
 }
-function calcBordado(q) { const v = ROUND1((q.pontos / 1000) * S.precos.bordadoMil * q.qtd); return { cf: v, rev: v }; }
+function calcBordado(q) { const conta = ROUND1((q.pontos / 1000) * S.precos.bordadoMil * q.qtd), min = S.precos.bordadoMin ?? 20, v = Math.max(conta, min); return { cf: v, rev: v, minimo: conta < min, conta }; }
 
 const GRAV_PADRAO = { simples: 20, simbolo: 25, arte: 30, lado2: 10, faca: 10, caneta: 5, lapis: 2 };
 // Fotos: no app final vão para "Drive Personalizados/Fotos/<tipo>" com o nome "AAAA-MM-DD - cliente - produto.jpg"
@@ -419,7 +466,7 @@ const situacao = (d) => { if (d.interno) return "Serviço interno"; const v = d.
 const API = "https://rmihonsfpvfanpisgxoq.supabase.co";
 const CHAVE = "sb_publishable_eF_XOAmP-rAooLYIxPctMg_Su_-IiXF";
 const INICIO_APP = "2026-11-12"; // vendas antes deste dia podem entrar já na fase em que estão
-const S = { dem: [], vendas: [], avisos: [], precos: { bordadoMil: 2, grav: Object.assign({}, GRAV_PADRAO) }, google: null, mmInfo: null, mmMeses: [] };
+const S = { dem: [], vendas: [], avisos: [], precos: { bordadoMil: 2, bordadoMin: 20, grav: Object.assign({}, GRAV_PADRAO) }, google: null, mmInfo: null, mmMeses: [] };
 const DB = { docs: {}, desde: null, pessoas: [] };
 let TOKEN = null, U = null, pendRender = false, sincronizando = false, ultimaSync = 0, offline = false;
 let minPer = "mes", minBusca = "";
@@ -473,8 +520,8 @@ function montar() {
     .sort((a, b) => b.id - a.id);
   S.avisos = docs.filter((x) => x.col === "aviso").map((x) => Object.assign(clone(x.data), { _id: x.id, _v: x.v })).sort((a, b) => (b.quando || "").localeCompare(a.quando || ""));
   const pr = docs.find((x) => x.col === "cfg" && x.id === "precos");
-  S.precos = { bordadoMil: 2, grav: Object.assign({}, GRAV_PADRAO) };
-  if (pr) { if (pr.data.bordadoMil != null) S.precos.bordadoMil = pr.data.bordadoMil; Object.assign(S.precos.grav, pr.data.grav || {}); }
+  S.precos = { bordadoMil: 2, bordadoMin: 20, grav: Object.assign({}, GRAV_PADRAO) };
+  if (pr) { if (pr.data.bordadoMil != null) S.precos.bordadoMil = pr.data.bordadoMil; if (pr.data.bordadoMin != null) S.precos.bordadoMin = pr.data.bordadoMin; Object.assign(S.precos.grav, pr.data.grav || {}); }
   S._precosV = pr ? pr.v : 0;
   const g = docs.find((x) => x.col === "cfg" && x.id === "google"); S.google = g ? g.data : null; S._googleV = g ? g.v : 0;
   if (U) { const eu = pessoa(U.id); if (eu) U = Object.assign({}, U, eu); }
@@ -561,6 +608,9 @@ function atualizarTela() {
   const y = window.scrollY, kx = $(".kanban-wrap") ? $(".kanban-wrap").scrollLeft : 0; render(); window.scrollTo(0, y); if ($(".kanban-wrap")) $(".kanban-wrap").scrollLeft = kx;
 }
 
+// Avisos: marcar como lido na nuvem; quem recebe pedidos de orçamento
+function marcarLido(a) { if (!a || a.lido) return; a.lido = true; gravarDoc("aviso", a._id, avisoLimpo(a), a._v).catch(() => {}); }
+function paraPedido() { const l = PESSOAS.filter((p) => p.papel === "pers").map((p) => p.id); return l.length ? l : [adminId()].filter(Boolean); }
 const $ = (s, r = document) => r.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 let toastT; function toast(t) { const el = $("#toast"); el.textContent = t; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => (el.hidden = true), 3400); }
@@ -660,7 +710,7 @@ function render() {
   if (!casa() && ["acomp", "relatorio", "agenda", "orcar", "precos", "pessoas"].includes(tela)) tela = "vendas";
   const naoLidos = avisosAbertos().filter((a) => !a.lido).length;
   const nSem = semEntrada().length;
-  const tit = tela === "form" ? (form.venda ? "Dar entrada" : form.id ? "Editar demanda" : "Nova demanda") : TITULOS[tela];
+  const tit = tela === "form" ? (form.venda ? "Dar entrada" : form.pedido ? "Pedir orçamento" : form.id ? "Editar demanda" : "Nova demanda") : TITULOS[tela];
   const sub = ["form", "orcar", "pessoas", "precos"].includes(tela);
   $("#app").innerHTML = '<header class="top"><div class="wrap">' + (sub ? '<button type="button" class="iconbtn" id="bVoltar" aria-label="Voltar">' + ic("back") + "</button>" : "") +
     "<h1>" + tit + '<span class="who">' + esc(U.nome) + " · " + esc(DESC_PAPEL[U.papel] || "") + "</span></h1>" +
@@ -668,7 +718,7 @@ function render() {
     (U.papel === "admin" ? '<button type="button" class="iconbtn" id="bPrecos" aria-label="Preços">' + ic("tag") + '</button><button type="button" class="iconbtn" id="bPessoas" aria-label="Pessoas e PINs">' + ic("users") + "</button>" : "") +
     '<button type="button" class="iconbtn" id="bSair" aria-label="Minha conta: trocar PIN ou sair">' + ic("out") + "</button></div></header>" + demoBar() +
     '<main class="wrap" id="main"></main>' +
-    (["form", "orcar"].includes(tela) ? "" : '<button type="button" class="fab" id="fab" aria-label="Novo orçamento ou nova demanda">' + ic("plus") + "</button>") +
+    (["form", "orcar"].includes(tela) ? "" : '<button type="button" class="fab" id="fab" aria-label="' + (casa() ? "Novo orçamento ou nova demanda" : "Pedir orçamento ao Júnior") + '">' + ic("plus") + "</button>") +
     '<nav class="nav"><div class="in">' + abas().map(([k, t, i]) => { const n = k === "vendas" ? nSem : k === "avisos" ? naoLidos : 0; return '<button type="button" data-tab="' + k + '" class="' + (tela === k ? "on" : "") + '"><span style="position:relative">' + ic(i) + (n ? '<span class="badge">' + n + "</span>" : "") + "</span>" + t + "</button>"; }).join("") + "</div></nav>";
   document.querySelectorAll("[data-tab]").forEach((b) => (b.onclick = () => { tela = b.dataset.tab; form = null; render(); window.scrollTo(0, 0); }));
   $("#bSair").onclick = minhaConta;
@@ -690,8 +740,9 @@ function sheet(tit, corpo) {
 // ===================== Botão + =====================
 const itemVazio = (servico, desc) => ({ servico: servico || SERVICOS[0], desc: desc || "", valor: null, anexos: [] });
 function novaDemanda(extra) { const volta = tela; form = Object.assign({ cliente: "", contato: "", vend: U.id, data: diaISO(HOJE), prazo: somaDias(5), interno: false, obs: "", venda: null, itens: [itemVazio()], voltar: volta }, extra || {}); tela = "form"; fecharSheet(); render(); window.scrollTo(0, 0); }
+function novoPedido() { const volta = tela; form = { pedido: true, cliente: "", contato: "", vend: U.id, data: diaISO(HOJE), prazo: somaDias(2), interno: false, obs: "", venda: null, itens: [itemVazio()], voltar: volta }; tela = "form"; fecharSheet(); render(); window.scrollTo(0, 0); }
 function menuMais() {
-  if (!casa()) return novaDemanda();
+  if (!casa()) return novoPedido();
   const el = sheet("O que você quer criar?", '<div class="lbl">Orçamento</div><div class="opt-grid">' +
     [["bor", "Bordado", "Por mil pontos"], ["imp", "Impressão", "Lona, tecido, vinil"], ["las", "Corte a laser", "Linear ou caixa"], ["grav", "Gravação UV", "Máquina UV"]].map(([k, t, s]) => '<button type="button" class="opt" data-o="' + k + '"><b>' + t + "</b><small>" + s + "</small></button>").join("") +
     '</div><div class="lbl">Demanda</div><button type="button" class="opt" id="optDem"><b>Nova demanda</b><small>Serviço que ainda não tem venda no sistema. A venda é ligada depois, pelo nome do cliente.</small></button>');
@@ -702,12 +753,12 @@ function menuMais() {
 // ===================== Vendas sem entrada =====================
 function cardVenda(v) {
   const its = v.itens.filter((i) => REFS.includes(i.ref));
-  const sug = S.dem.find((d) => !d.venda && !d.interno && !["orcamento", "cancelada"].includes(d.status) && norm(d.cliente) === norm(v.cliente));
+  const sug = S.dem.find((d) => !d.venda && !d.interno && d.status !== "cancelada" && !(d.status === "orcamento" && !d.orc) && norm(d.cliente) === norm(v.cliente));
   return '<div class="card"><div class="row"><div class="cli">' + esc(titulo(v.cliente)) + '</div><b class="num">' + brl(valorPers(v)) + "</b></div>" +
     '<div class="meta"><span>Venda <b>' + v.num + "</b></span><span>" + dataBR(v.data) + "</span><span>Vendedor <b>" + esc(nomeDe(v.vend)) + "</b></span><span>" + (v.faturada ? "Faturada" : '<b style="color:var(--warn)">Pré-venda</b>') + "</span></div>" +
     '<div class="itens">' + its.map((i) => "<div><span>" + esc(titulo(i.desc)) + '<br><span class="ref">' + i.ref + " · " + SERV[i.ref] + '</span></span><b class="num">' + brl(i.valor) + "</b></div>").join("") + "</div>" +
     (v.itens.length > its.length ? '<div class="meta"><span>Outros produtos da nota ficam de fora: ' + brl(v.itens.filter((i) => !REFS.includes(i.ref)).reduce((s, i) => s + i.valor, 0)) + "</span></div>" : "") +
-    '<div class="btns">' + (sug ? '<button type="button" class="btn ghost" data-ligar="' + v.num + '" data-dem="' + sug.id + '">Ligar à demanda já criada</button>' : "") + '<button type="button" class="btn" data-entrada="' + v.num + '">Dar entrada</button></div></div>';
+    '<div class="btns">' + (sug ? '<button type="button" class="btn ghost" data-ligar="' + v.num + '" data-dem="' + sug.id + '">' + (sug.status === "orcamento" ? "Ligar ao orçamento nº " + sug.id : "Ligar à demanda já criada") + "</button>" : "") + '<button type="button" class="btn" data-entrada="' + v.num + '">Dar entrada</button></div></div>';
 }
 function telaVendas() {
   const l = semEntrada();
@@ -722,7 +773,9 @@ function telaVendas() {
   }));
   document.querySelectorAll("[data-ligar]").forEach((b) => (b.onclick = () => {
     const v = S.vendas.find((x) => x.num === b.dataset.ligar), d = S.dem.find((x) => x.id === +b.dataset.dem);
+    if (d.status === "orcamento") { d.itens = v.itens.filter((i) => REFS.includes(i.ref)).map((i) => { const igual = d.itens.find((o) => o.servico === SERV[i.ref]); return { id: uid(), servico: SERV[i.ref], desc: titulo(i.desc), valor: i.valor, ref: i.ref, anexos: igual ? igual.anexos : [], fase: "iniciar", fotoFinal: [], orcCf: igual ? igual.orcCf : null, orcRev: igual ? igual.orcRev : null }; }); d.status = null; d.vend = v.vend; d.data = v.data; d.prazo = d.prazo < diaISO(HOJE) ? somaDias(5) : d.prazo; }
     d.venda = v.num; d.hist.push([diaISO(HOJE), "Ligada à venda " + v.num + " (" + U.nome + ")"]); salvarDem(d).then(() => { toast("Venda " + v.num + " ligada à demanda de " + d.cliente + "."); render(); }).catch(erroGravar);
+    if (casa() && !d.prodIni && ["iniciar", "producao"].includes(fase(d))) editarProducao(d, true);
   }));
   document.querySelectorAll("[data-d]").forEach((b) => (b.onclick = () => abrirDem(+b.dataset.d)));
 }
@@ -733,21 +786,24 @@ function telaForm() {
   const vendOpts = vendedoresLista(f.vend).map((p) => '<option value="' + p.id + '"' + (f.vend === p.id ? " selected" : "") + ">" + esc(p.nome) + (p.login ? "" : " (sem login)") + "</option>").join("");
   const itemHTML = (it, k) => '<div class="item-ed" data-it="' + k + '"><div class="row"><b>Item ' + (k + 1) + (it.valor != null ? ' · <span class="num">' + brl(it.valor) + "</span>" : "") + "</b>" + (f.itens.length > 1 && it.valor == null ? '<button type="button" class="linkbtn" data-rm="' + k + '">Remover</button>' : "") + "</div>" +
     '<div class="field"><label for="iS' + k + '">Tipo de serviço</label><select id="iS' + k + '"' + (it.ref ? " disabled" : "") + ">" + SERVICOS.map((t) => "<option" + (it.servico === t ? " selected" : "") + ">" + t + "</option>").join("") + "</select></div>" +
-    '<div class="field"><label for="iD' + k + '">O que vai ser feito</label><textarea id="iD' + k + '" required placeholder="Ex.: caixa MDF 20×20 com tampa gravada, 2 unidades">' + esc(it.desc) + "</textarea>" + (it.ref ? "<small>Veio da descrição escrita na venda. Pode completar.</small>" : "") + "</div>" +
+    '<div class="field"><label for="iD' + k + '">' + (f.pedido ? "O que o cliente quer" : "O que vai ser feito") + '</label><textarea id="iD' + k + '" required placeholder="' + (f.pedido ? "Ex.: 50 caixas MDF 10×10 com nome gravado na tampa, cor natural" : "Ex.: caixa MDF 20×20 com tampa gravada, 2 unidades") + '">' + esc(it.desc) + "</textarea>" + (it.ref ? "<small>Veio da descrição escrita na venda. Pode completar.</small>" : "") + "</div>" +
     '<div class="field"><label for="iA' + k + '">Referência ou logo (opcional)</label><input id="iA' + k + '" type="file" accept="image/*"><div class="photo-prev" id="iP' + k + '">' + (it.anexos || []).map((a) => '<img src="' + fu(a) + '" alt="">').join("") + "</div></div></div>";
   $("#main").innerHTML = '<form class="form" id="fDem" autocomplete="off">' +
+    (f.pedido ? '<div class="note">O pedido vai para o Júnior fazer o orçamento. Quando ele responder, o orçamento aparece em Avisos para você mandar ao cliente.</div>' : "") +
     (v ? '<div class="locked"><span>Venda <b style="font-family:var(--f-body);font-size:15px">' + v.num + "</b> · " + esc(nomeDe(v.vend)) + " · " + (v.faturada ? "Faturada" : "Pré-venda") + '<br><small style="color:var(--muted)">Soma dos serviços do Personalizados, vem do sistema</small></span><b class="num">' + brl(valorPers(v)) + "</b></div>" : "") +
-    '<div class="field"><label for="nCli">Nome do cliente</label><input id="nCli" required value="' + esc(f.cliente) + '"' + (v ? " readonly" : ' placeholder="Igual vai sair na nota do My Manager"') + ">" + (v ? "" : "<small>Use o mesmo nome da nota. É assim que o app liga a demanda à venda depois.</small>") + "</div>" +
+    '<div class="field"><label for="nCli">Nome do cliente</label><input id="nCli" required value="' + esc(f.cliente) + '"' + (v ? " readonly" : ' placeholder="Igual vai sair na nota do My Manager"') + ">" + (v ? "" : "<small>Use o mesmo nome que vai na venda do My Manager. Assim o app liga o orçamento à venda depois.</small>") + "</div>" +
     '<div class="field"><label for="nCont">Contato (opcional)</label><input id="nCont" value="' + esc(f.contato) + '" placeholder="WhatsApp do cliente" inputmode="tel"></div>' +
-    '<div class="grid2"><div class="field"><label for="nVend">Vendedor da nota</label><select id="nVend"' + (v || !casa() ? " disabled" : "") + ">" + vendOpts + '</select></div><div class="field"><label for="nPrazo">Entrega combinada</label><input id="nPrazo" type="date" required value="' + (f.prazo || "") + '"></div></div>' +
+    '<div class="grid2"><div class="field"><label for="nVend">Vendedor da nota</label><select id="nVend"' + (v || !casa() ? " disabled" : "") + ">" + vendOpts + '</select></div><div class="field"><label for="nPrazo">' + (f.pedido ? "Responder até" : "Entrega combinada") + '</label><input id="nPrazo" type="date" required value="' + (f.prazo || "") + '"></div></div>' +
     '<div class="lbl">Itens</div><div id="itens" style="display:grid;gap:10px">' + f.itens.map(itemHTML).join("") + "</div>" +
     (v ? '<small style="color:var(--muted)">Os itens vêm da venda no My Manager. Para mudar um item, altere a venda no sistema e o app atualiza. Se a venda já foi faturada, faça uma venda nova.</small>' : '<button type="button" class="addbtn" id="addIt">+ Adicionar item</button>') +
     '<div class="field"><label for="nObs">Observação (opcional)</label><input id="nObs" value="' + esc(f.obs) + '"></div>' +
     (v && !f.id && v.data < INICIO_APP ? '<div class="field"><label for="nAgora">Como está agora</label><select id="nAgora">' + [["iniciar", "A iniciar"], ["producao", "Em produção"], ["concluido", "Pronto para entregar"], ["entregue", "Já entregue ao cliente"]].map(([k, t]) => '<option value="' + k + '"' + (f.agora === k ? " selected" : "") + ">" + t + "</option>").join("") + '</select><small>Venda feita antes do app começar. Escolha em que fase ela está hoje.</small></div>' : "") +
-    (casa() && !v ? '<label class="check"><input type="checkbox" id="nInt"' + (f.interno ? " checked" : "") + '><span><b>Serviço interno</b><small>Campanha ou uso da loja. Não entra no My Manager e não espera venda.</small></span></label>' : "") +
-    '<button class="btn block" type="submit">' + (v ? "Dar entrada" : f.id ? "Salvar alterações" : "Criar demanda") + "</button></form>";
+    (casa() && !f.pedido && !f.id ? '<div class="field"><label for="nDias">Dias de produção</label><input id="nDias" type="number" min="1" max="60" inputmode="numeric" placeholder="Ex.: 3" value="' + (f.dias || "") + '"><small id="nDiasR">Começa hoje, no aceite. Deixe vazio para dizer depois. Dá para mudar tocando no bloco na agenda.</small></div>' : "") +
+    (casa() && !v && !f.pedido ? '<label class="check"><input type="checkbox" id="nInt"' + (f.interno ? " checked" : "") + '><span><b>Serviço interno</b><small>Campanha ou uso da loja. Não entra no My Manager e não espera venda.</small></span></label>' : "") +
+    '<button class="btn block" type="submit">' + (v ? "Dar entrada" : f.pedido ? "Mandar para o Júnior" : f.id ? "Salvar alterações" : "Criar demanda") + "</button></form>";
   const lerItens = () => f.itens.forEach((it, k) => { if (!it.ref) it.servico = $("#iS" + k).value; it.desc = $("#iD" + k).value; });
-  const lerCab = () => { if ($("#nAgora")) f.agora = $("#nAgora").value; f.cliente = $("#nCli").value; f.contato = $("#nCont").value; f.prazo = $("#nPrazo").value; f.obs = $("#nObs").value; if (!v && casa()) f.vend = $("#nVend").value; if ($("#nInt")) f.interno = $("#nInt").checked; };
+  if ($("#nDias")) $("#nDias").oninput = () => { const n = parseInt($("#nDias").value, 10); $("#nDiasR").textContent = n >= 1 ? "Na agenda: de " + dataBR(diaISO(HOJE)) + " a " + dataBR(somaDias(n - 1)) + " (" + n + (n > 1 ? " dias" : " dia") + "). Dá para mudar depois." : "Começa hoje, no aceite. Deixe vazio para dizer depois."; };
+  const lerCab = () => { if ($("#nDias")) f.dias = $("#nDias").value; if ($("#nAgora")) f.agora = $("#nAgora").value; f.cliente = $("#nCli").value; f.contato = $("#nCont").value; f.prazo = $("#nPrazo").value; f.obs = $("#nObs").value; if (!v && casa()) f.vend = $("#nVend").value; if ($("#nInt")) f.interno = $("#nInt").checked; };
   f.itens.forEach((it, k) => { $("#iA" + k).onchange = (e) => lerFoto(e.target.files[0], async (ft) => { try { const id = await guardarFoto(ft, { pasta: "Referências", nome: "" }); it.anexos = it.anexos || []; it.anexos.push({ id, t: ft.t }); $("#iP" + k).insertAdjacentHTML("beforeend", '<img src="' + ft.t + '" alt="">'); } catch (er) { erroGravar(er); } }); });
   document.querySelectorAll("[data-rm]").forEach((b) => (b.onclick = () => { lerCab(); lerItens(); f.itens.splice(+b.dataset.rm, 1); telaForm(); }));
   if ($("#addIt")) $("#addIt").onclick = () => { lerCab(); lerItens(); f.itens.push(itemVazio()); telaForm(); const k = f.itens.length - 1; $("#iD" + k).focus(); };
@@ -767,10 +823,13 @@ function telaForm() {
         const d = Object.assign({ id, status: agora === "entregue" ? "entregue" : null, criadoPor: U.id, data: v ? v.data : diaISO(HOJE), venda: v ? v.num : null, orc: f.orc || null, orcId: f.orcId || null, fotoEntrega: [], entregueEm: agora === "entregue" ? v.data : null, retrabalhos: [],
           hist: [[diaISO(HOJE), (v ? "Entrada da venda " + v.num : "Demanda criada") + " por " + U.nome]],
           itens: f.itens.map((it) => ({ id: uid(), servico: it.servico, desc: it.desc.trim(), valor: it.valor ?? null, ref: it.ref, anexos: it.anexos || [], fase: faseIt, fotoFinal: [] })) }, dados);
+        if (f.pedido) { d.status = "orcamento"; d.pedido = true; d.hist = [[diaISO(HOJE), "Pedido de orçamento de " + U.nome + " para o Júnior"]]; }
+        const nd = parseInt(f.dias, 10); if (!f.pedido && nd >= 1 && agora !== "entregue" && agora !== "concluido") { d.prodIni = diaISO(HOJE); d.prodFim = somaDias(nd - 1); d.hist.push([diaISO(HOJE), "Produção de " + dataBR(d.prodIni) + " a " + dataBR(d.prodFim) + " (" + nd + (nd > 1 ? " dias" : " dia") + ")"]); }
         if (agora !== "iniciar") d.hist.push([diaISO(HOJE), "Entrou já como " + { producao: "Em produção", concluido: "Pronto para entregar", entregue: "Entregue" }[agora] + " (venda de antes do app)"]);
         d._v = 0; await salvarDem(d);
+        if (f.pedido) for (const para of paraPedido()) await gravarDoc("aviso", uid(), { para, txt: "Pedido de orçamento de " + U.nome + ": " + d.cliente, dem: d.id, lido: false, quando: diaISO(HOJE), tipo: "pedido" }).catch(() => {});
         if (f.orcId) { const o = S.dem.find((x) => x.id === f.orcId); if (o) { o.status = "cancelada"; o.hist.push([diaISO(HOJE), "Orçamento aprovado, virou a demanda " + d.id]); await salvarDem(o).catch(() => {}); } }
-        toast(v ? (agora === "iniciar" ? "Entrada dada. A demanda está em A iniciar." : "Entrada dada, já em " + faseNome(agora === "entregue" ? "entregue" : agora) + ".") : "Demanda nº " + id + " criada. Ela fica esperando a venda no sistema.");
+        toast(f.pedido ? "Pedido nº " + id + " mandado para o Júnior. Quando ele responder, aparece em Avisos." : v ? (agora === "iniciar" ? "Entrada dada. A demanda está em A iniciar." : "Entrada dada, já em " + faseNome(agora === "entregue" ? "entregue" : agora) + ".") : "Demanda nº " + id + " criada. Ela fica esperando a venda no sistema.");
       }
       const volta = f.voltar && f.voltar !== "form" ? f.voltar : "demandas"; form = null; tela = volta; render(); window.scrollTo(0, 0);
     } catch (er) { bt.dataset.ok = ""; bt.textContent = txtBt; erroGravar(er); }
@@ -792,7 +851,7 @@ function cardDem(d) {
   return '<button type="button" class="card' + (mine ? " mine" : "") + (late ? " late" : "") + '" data-d="' + d.id + '">' +
     '<div class="row"><div class="cli">' + esc(d.cliente) + '</div><span class="pill f-' + F + '">' + faseNome(F) + "</span></div>" +
     '<div class="kc">' + d.itens.map((i) => '<span class="prod">' + esc(i.desc) + (d.itens.length > 1 && ["iniciar", "producao", "concluido"].includes(F) ? stItem(i.fase) : "") + "</span>").join("") + "</div>" +
-    '<div class="meta"><span>Vendedor <b>' + esc(nomeDe(d.vend)) + "</b></span><span>Entrega <b>" + dataBR(d.prazo) + "</b></span>" + (val != null ? '<span class="num">Valor <b>' + brl(val) + "</b></span>" : d.orc ? '<span class="num">Orçado <b>' + brl(d.orc.cf) + "</b></span>" : "") + "</div>" +
+    '<div class="meta"><span>Vendedor <b>' + esc(nomeDe(d.vend)) + "</b></span><span>Entrega <b>" + dataBR(d.prazo) + "</b></span>" + (val != null ? '<span class="num">Valor <b>' + brl(val) + "</b></span>" : d.orc ? '<span class="num">Orçado <b>' + brl(d.orc.cf) + "</b></span>" : d.pedido ? '<span style="color:var(--warn)">Aguardando orçamento</span>' : "") + "</div>" +
     ((mine || late || d.interno || d.retrabalhos.length || (!d.venda && F !== "orcamento")) ? '<div class="meta">' + (mine ? '<span class="pill tag-mine">Minha venda</span>' : "") + (late ? '<span class="pill tag-late">Atrasada</span>' : "") + (d.interno ? '<span class="pill tag-int">Serviço interno</span>' : !d.venda && F !== "orcamento" ? '<span class="pill st-producao">Sem venda</span>' : "") + (d.retrabalhos.length ? '<span class="pill tag-re">Retrabalho</span>' : "") + "</div>" : "") +
     "</button>";
 }
@@ -804,9 +863,9 @@ function cardQuadro(d, aviso) {
     (aviso ? '<span class="lin" style="font-size:12px">' + (aviso.novo ? '<b style="color:var(--brand)">Novo</b> · ' : "") + "Avisado em " + dataBR(aviso.quando) + "</span>" : "") +
     '<span class="cli">' + esc(d.cliente) + "</span>" +
     d.itens.map((i) => '<span class="prod">' + esc(i.desc) + (d.itens.length > 1 && ["iniciar", "producao"].includes(F) ? stItem(i.fase) : "") + "</span>").join("") +
-    (F === "entregue" ? '<span class="lin">Entregue em <b>' + dataBR(d.entregueEm) + "</b></span>" : '<span class="lin' + (late ? " late-d" : "") + '">Entrega ' + (late ? "era " : "") + "<b" + (late ? ' style="color:inherit"' : "") + ">" + dataBR(d.prazo) + "</b></span>") +
+    (F === "entregue" ? '<span class="lin">Entregue em <b>' + dataBR(d.entregueEm) + "</b></span>" : '<span class="lin' + (late ? " late-d" : "") + '">' + (F === "orcamento" ? "Responder até " : "Entrega ") + (late ? "era " : "") + "<b" + (late ? ' style="color:inherit"' : "") + ">" + dataBR(d.prazo) + "</b></span>") +
     '<span class="lin">Vendedor <b>' + esc(nomeDe(d.vend)) + "</b></span>" +
-    (F === "orcamento" ? '<span class="lin num">Orçado <b>' + brl(d.orc.cf) + "</b> · revenda " + brl(d.orc.rev) + "</span>" : '<span class="lin num">' + (val != null ? "<b>" + brl(val) + "</b> · " : "") + situacao(d) + "</span>") +
+    (F === "orcamento" ? (d.orc ? '<span class="lin num">Orçado <b>' + brl(d.orc.cf) + "</b> · revenda " + brl(d.orc.rev) + "</span>" : '<span class="lin" style="color:var(--warn);font-weight:600">Pedido de orçamento · aguardando o Júnior</span>') : '<span class="lin num">' + (val != null ? "<b>" + brl(val) + "</b> · " : "") + situacao(d) + "</span>") +
     (d.retrabalhos.length ? '<span><span class="pill tag-re">Retrabalho</span></span>' : "") +
     "</div></button>";
 }
@@ -874,7 +933,9 @@ function abrirDem(id, abrirEm) {
   const el = sheet(esc(d.cliente),
     (F !== "cancelada" ? '<div><div class="steps" style="grid-template-columns:repeat(5,1fr)">' + ORD.map((p, k) => '<div class="' + (k <= i ? "on" : "") + '"></div>').join("") + '</div><div class="steps-l" style="grid-template-columns:repeat(5,1fr);margin-top:4px">' + ["Orçamento", "A iniciar", "Produção", "Pronto", "Entregue"].map((f) => "<span>" + f + "</span>").join("") + "</div></div>" : '<span class="pill f-cancelada">Cancelada</span>') +
     (casa() && atrasada(d) ? '<div class="note" style="background:var(--late-soft);color:var(--late);font-weight:600">Atrasada: a entrega era ' + dataBR(d.prazo) + ".</div>" : "") +
-    '<div class="lbl">Itens (' + d.itens.length + ")</div>" + itensHTML +
+    (d.pedido && !d.orc ? '<div class="note" style="background:var(--warn-soft);color:var(--warn)"><b>Pedido de orçamento</b> de ' + esc(nomeDe(d.criadoPor)) + ". Responder até " + dataBR(d.prazo) + ".</div>" : "") +
+    '<div class="lbl">' + (d.pedido && !d.orc ? "O que o cliente quer" : "Itens (" + d.itens.length + ")") + "</div>" + itensHTML +
+    (d.pedidoItens ? '<details class="note"><summary>Pedido original de ' + esc(nomeDe(d.criadoPor)) + "</summary>" + d.pedidoItens.map((i) => esc(i.servico) + ": " + esc(i.desc)).join("<br>") + fotos("Referência", d.pedidoItens.flatMap((i) => i.anexos)) + "</details>" : "") +
     '<div class="kv"><div><span>Vendedor da nota</span><b>' + esc(nomeDe(d.vend)) + "</b></div>" + (d.contato ? "<div><span>Contato</span><b>" + esc(d.contato) + "</b></div>" : "") +
     "<div><span>Data do pedido</span><b>" + dataBR(d.data) + "</b></div><div><span>Entrega combinada</span><b>" + dataBR(d.prazo) + "</b></div>" + (d.entregueEm ? "<div><span>Entregue em</span><b>" + dataBR(d.entregueEm) + "</b></div>" : "") +
     (d.orc ? '<div><span>Orçamento nº ' + (d.orcId || d.id) + " · " + esc(d.orc.tipo) + '</span><b class="num">' + brl(d.orc.cf) + " · revenda " + brl(d.orc.rev) + "</b></div>" : "") +
@@ -891,12 +952,24 @@ function abrirDem(id, abrirEm) {
   el.querySelectorAll("[data-pro]").forEach((b) => (b.onclick = () => { const k = +b.dataset.pro, it = d.itens[k]; pedirFoto($("#ia" + k), "Foto de " + it.desc, true, async (ft) => { const pasta = pastaDe(it.servico), nome = nomeFoto(d, it.desc, pasta); try { const id = await guardarFoto(ft, { pasta, nome, dem: d.id }); it.fotoFinal.push({ id, t: ft.t, nome, pasta }); } catch (er) { return erroGravar(er); } it.fase = "concluido"; registra(d, "Pronto com foto: " + it.desc); }, () => abrirDem(d.id)); }));
   const base = () => {
     let h = "";
-    if (F === "orcamento" && casa()) h += '<button type="button" class="btn block" id="aAprov">Orçamento aprovado</button>';
+    if (F === "orcamento" && !d.orc && casa()) h += '<button type="button" class="btn block" id="aFazOrc">Fazer o orçamento</button>';
+    if (F === "orcamento" && d.orc) h += '<button type="button" class="btn block" id="aCli">Mandar para o cliente (WhatsApp ou PDF)</button>';
+    if (F === "orcamento" && d.orc && (casa() || minha(d))) h += '<button type="button" class="btn ghost block" id="aLiga">Cliente fechou: ligar à venda do sistema</button>';
+    if (casa() && ["iniciar", "producao"].includes(F)) h += '<div class="note"><b>Produção:</b> ' + (d.prodIni ? dataBR(d.prodIni) + (d.prodFim && d.prodFim !== d.prodIni ? " a " + dataBR(d.prodFim) : "") + " (" + diasEntre(d.prodIni, d.prodFim) + (diasEntre(d.prodIni, d.prodFim) > 1 ? " dias" : " dia") + ")" : '<span style="color:var(--warn)">ainda não programada</span>') + '</div><button type="button" class="btn ghost block" id="aProg">' + (d.prodIni ? "Mudar dias de produção" : "Programar produção") + "</button>";
     if (F === "concluido" && (casa() || minha(d))) h += '<button type="button" class="btn block" id="aEnt">Entregue ao cliente</button>';
     if (F === "entregue" && casa()) h += '<button type="button" class="btn danger block" id="aRe">Retrabalho: o cliente voltou</button><button type="button" class="btn ghost block" id="aDes">Desfazer entrega</button>';
     if (casa() && !["entregue", "cancelada"].includes(F)) h += '<div class="btns"><button type="button" class="btn ghost" id="aEdit">Editar</button><button type="button" class="btn danger" id="aCanc">Cancelar</button></div>';
     acao.innerHTML = h;
-    if ($("#aAprov")) $("#aAprov").onclick = () => { fecharSheet(); novaDemanda({ cliente: d.cliente, vend: d.vend, orcId: d.id, orc: d.orc, itens: d.itens.map((it) => itemVazio(it.servico, it.desc)) }); };
+    if ($("#aFazOrc")) $("#aFazOrc").onclick = () => { const volta = tela; fecharSheet(); novoOrc(tipoDe(d.itens[0].servico), { cliente: d.cliente, vend: d.vend, prazo: d.prazo, pedidoId: d.id }); form = { voltar: volta }; tela = "orcar"; render(); window.scrollTo(0, 0); };
+    if ($("#aCli")) $("#aCli").onclick = () => mandarCliente(d);
+    if ($("#aLiga")) $("#aLiga").onclick = () => ligarVenda(d);
+    if ($("#aProg")) $("#aProg").onclick = () => {
+      const ini = d.prodIni || diaISO(HOJE), fim = d.prodFim || ini;
+      acao.innerHTML = '<div class="form"><div class="lbl">Dias de produção</div>' + progCampos(ini, fim, !d.prodIni) + '<div class="btns"><button type="button" class="btn ghost" id="pgV">Voltar</button><button type="button" class="btn" id="pgO">Salvar</button></div></div>';
+      const ler = ligaProg(d);
+      $("#pgV").onclick = base;
+      $("#pgO").onclick = () => { const r = ler(); if (!r) return; d.prodIni = r[0]; d.prodFim = r[1]; registra(d, "Produção de " + dataBR(r[0]) + " a " + dataBR(r[1]) + " (" + diasEntre(r[0], r[1]) + (diasEntre(r[0], r[1]) > 1 ? " dias" : " dia") + ")"); };
+    };
     if ($("#aEnt")) $("#aEnt").onclick = () => pedirFoto(acao, "Foto da entrega", false, async (ft) => { if (ft) { const pasta = pastaDe(d.itens[0].servico), nome = nomeFoto(d, d.itens[0].desc + " - entrega", pasta); try { const id = await guardarFoto(ft, { pasta, nome, dem: d.id }); d.fotoEntrega.push({ id, t: ft.t, nome, pasta }); } catch (er) { return erroGravar(er); } } d.status = "entregue"; d.entregueEm = diaISO(HOJE); registra(d, "Entregue ao cliente"); }, base);
     if ($("#aRe")) $("#aRe").onclick = retrabalho;
     if ($("#aDes")) $("#aDes").onclick = () => { d.status = null; d.entregueEm = null; registra(d, "Entrega desfeita, voltou para Pronto para entregar"); };
@@ -914,6 +987,7 @@ function abrirDem(id, abrirEm) {
   }
   base();
   if (abrirEm === "retrabalho" && F === "entregue") retrabalho();
+  if (abrirEm === "entrega" && $("#aEnt")) $("#aEnt").click();
 }
 function pedirFoto(alvo, tit, obrig, ok, voltar) {
   alvo.innerHTML = '<div class="form" style="flex:1 1 100%"><div class="lbl">' + esc(tit) + (obrig ? ' <span class="req">obrigatória</span>' : " (opcional)") + '</div><small style="color:var(--muted)">A foto vai para o Drive, na pasta Fotos do tipo do item, com a data, o cliente e o produto no nome.</small><label class="btn ghost block" for="fx" style="text-align:center">Tirar ou escolher foto</label><input class="hidden-input" id="fx" type="file" accept="image/*" capture="environment"><div class="photo-prev" id="fxp"></div><div class="btns"><button type="button" class="btn ghost" id="fxc">Voltar</button><button type="button" class="btn" id="fxo"' + (obrig ? ' disabled style="opacity:.5"' : "") + ">Confirmar</button></div></div>";
@@ -939,6 +1013,53 @@ async function registra(d, txt) {
   fecharSheet(); render();
 }
 
+// ===================== Orçamento para o cliente e ligação com a venda =====================
+const tipoDe = (servico) => ({ "Impressão": "imp", "Corte a laser": "las", "Bordado": "bor", "Gravação UV": "grav" }[servico] || "las");
+const diasEntre = (a, b) => Math.round((new Date((b || a) + "T00:00:00") - new Date(a + "T00:00:00")) / 864e5) + 1;
+function textoCliente(d, tab) {
+  const val = (i) => (tab === "rev" ? i.orcRev : i.orcCf);
+  const temItem = d.itens.every((i) => i.orcCf != null);
+  const total = tab === "rev" ? d.orc.rev : d.orc.cf;
+  return "*Loja São João · Personalizados*\nOrçamento nº " + d.id + " · " + dataBR(d.data) + (d.data.slice(0, 4) === String(HOJE.getFullYear()) ? "/" + HOJE.getFullYear() : "") + "\nCliente: " + d.cliente + "\n\n" +
+    d.itens.map((i, k) => (k + 1) + ". " + i.desc + (temItem ? " · " + brl(val(i)) : "")).join("\n") +
+    "\n\n*Total: " + brl(total) + "*" + (tab === "rev" ? " (preço de revenda)" : "") + "\n\nQualquer dúvida, estamos à disposição!\nAtendimento: " + nomeDe(d.vend);
+}
+function mandarCliente(d) {
+  let tab = "cf";
+  const el = sheet("Orçamento nº " + d.id + " para o cliente", '<div class="seg" id="mcTab"><button type="button" data-t="cf" class="on">Consumidor final</button><button type="button" data-t="rev">Revenda</button></div><textarea id="mcTxt" rows="12" style="width:100%;font:inherit;font-size:14px;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--bg);color:var(--fg)"></textarea><small style="color:var(--muted)">Dá para mudar o texto antes de mandar.</small><div class="btns"><button type="button" class="btn ghost" id="mcCopia">Copiar texto</button><a class="btn" id="mcZap" target="_blank" rel="noopener" style="text-align:center;text-decoration:none">Abrir no WhatsApp</a></div><button type="button" class="btn ghost block" id="mcPdf">Gerar PDF</button>');
+  const pinta = () => { $("#mcTxt").value = textoCliente(d, tab); liga(); };
+  const liga = () => { const fone = String(d.contato || "").replace(/\D/g, ""); $("#mcZap").href = "https://wa.me/" + (fone.length >= 10 ? (fone.startsWith("55") ? fone : "55" + fone) : "") + "?text=" + encodeURIComponent($("#mcTxt").value); };
+  el.querySelectorAll("#mcTab [data-t]").forEach((b) => (b.onclick = () => { tab = b.dataset.t; el.querySelectorAll("#mcTab button").forEach((x) => x.classList.toggle("on", x === b)); pinta(); }));
+  $("#mcTxt").oninput = liga;
+  $("#mcCopia").onclick = async () => { const t = $("#mcTxt").value; try { await navigator.clipboard.writeText(t); toast("Texto copiado. É só colar no WhatsApp do cliente."); } catch (e) { $("#mcTxt").select(); document.execCommand("copy"); toast("Texto copiado."); } };
+  $("#mcPdf").onclick = () => pdfOrcamento(d, tab);
+  pinta();
+}
+function pdfOrcamento(d, tab) {
+  const val = (i) => (tab === "rev" ? i.orcRev : i.orcCf), temItem = d.itens.every((i) => i.orcCf != null);
+  let pg = $("#printOrc"); if (!pg) { pg = document.createElement("div"); pg.id = "printOrc"; document.body.appendChild(pg); }
+  pg.innerHTML = '<div class="po"><div class="po-top"><b>Loja São João</b><span>Personalizados</span></div><h1>Orçamento nº ' + d.id + '</h1><p>Data: ' + dataBR(d.data) + "/" + d.data.slice(0, 4) + "<br>Cliente: <b>" + esc(d.cliente) + "</b>" + (tab === "rev" ? "<br>Preço de revenda" : "") + '</p><table><thead><tr><th>Item</th><th class="r">Valor</th></tr></thead><tbody>' +
+    d.itens.map((i) => "<tr><td>" + esc(i.desc) + '<br><small>' + esc(i.servico) + '</small></td><td class="r">' + (temItem ? brl(val(i)) : "") + "</td></tr>").join("") +
+    '</tbody><tfoot><tr><td>Total</td><td class="r">' + brl(tab === "rev" ? d.orc.rev : d.orc.cf) + "</td></tr></tfoot></table><p>Atendimento: " + esc(nomeDe(d.vend)) + "</p><p class=\"po-fim\">Qualquer dúvida, estamos à disposição!</p></div>";
+  toast("Na janela que abrir, escolha \"Salvar como PDF\".");
+  setTimeout(() => window.print(), 300);
+}
+function ligarVenda(d) {
+  const l = S.vendas.filter((v) => valorPers(v) > 0 && !S.dem.some((x) => x.venda === v.num) && (casa() || v.vend === U.id))
+    .sort((a, b) => (norm(b.cliente) === norm(d.cliente)) - (norm(a.cliente) === norm(d.cliente)) || b.data.localeCompare(a.data));
+  const el = sheet("Qual é a venda de " + esc(d.cliente) + "?", '<div class="note">Faça a venda no My Manager. Ela aparece aqui em poucos minutos. Toque na venda certa para ligar o orçamento nº ' + d.id + ".</div>" +
+    (l.length ? '<div class="list">' + l.map((v) => '<button type="button" class="card" data-lv="' + v.num + '"><div class="row"><div class="cli">' + esc(titulo(v.cliente)) + (norm(v.cliente) === norm(d.cliente) ? ' <span class="pill tag-mine">mesmo nome</span>' : "") + '</div><b class="num">' + brl(valorPers(v)) + '</b></div><div class="meta"><span>Venda <b>' + v.num + "</b></span><span>" + dataBR(v.data) + "</span><span>" + esc(nomeDe(v.vend)) + "</span></div></button>").join("") + "</div>" : '<div class="empty">Nenhuma venda sem entrada agora. Se você acabou de lançar, espere uns minutos.</div>'));
+  el.querySelectorAll("[data-lv]").forEach((b) => (b.onclick = () => {
+    const v = S.vendas.find((x) => x.num === b.dataset.lv);
+    const its = v.itens.filter((i) => REFS.includes(i.ref));
+    d.itens = its.map((i) => { const igual = d.itens.find((o) => o.servico === SERV[i.ref]); return { id: uid(), servico: SERV[i.ref], desc: titulo(i.desc), valor: i.valor, ref: i.ref, anexos: igual ? igual.anexos : [], fase: "iniciar", fotoFinal: [], orcCf: igual ? igual.orcCf : null, orcRev: igual ? igual.orcRev : null }; });
+    d.venda = v.num; d.status = null; d.vend = v.vend; d.data = v.data; d.prazo = somaDias(5);
+    const feito = registra(d, "Cliente fechou. Ligado à venda " + v.num + ", foi para A iniciar");
+    toast("Orçamento nº " + d.id + " ligado à venda " + v.num + ". Agora está em A iniciar. Combine a data de entrega em Editar.");
+    if (casa() && !d.prodIni) Promise.resolve(feito).then(() => editarProducao(d, true));
+  }));
+}
+
 // ===================== Orçamentos (vários itens, pode misturar tipos) =====================
 const ultimo = { imp: { material: "Canva Dele", largura: 1.55, comprimento: 0.51, passadas: 4, pct: 100, arte: 10, fora: 0 }, las: { modo: "linear", tipo: "Sem Montagem", material: "MDF 3mm cru UDI", larg: 30, alt: 30, qtd: 1, cl: 20, cc: 20, ca: 7, tl: 20.6, tc: 20.6, ta: 2, dl: 0, dc: 0, minutos: 8 }, bor: { pontos: "", qtd: 1 }, grav: { prod: "garrafa", gtipo: "simples", lado2: false, qtd: 1, outro: "", manual: false } };
 const NOMES_ORC = { imp: "Impressão", las: "Corte a laser", bor: "Bordado", grav: "Gravação UV" };
@@ -946,12 +1067,13 @@ const PLANILHA = { imp: "Planilha Impressora", las: "Planilha Personalizados", b
 const GRAV_PROD = [["garrafa", "Garrafa"], ["faca", "Faca/canivete"], ["caneta", "Caneta"], ["lapis", "Lápis de cor"], ["outro", "Outro"]];
 const GRAV_TIPO = [["simples", "Simples/nome"], ["simbolo", "Símbolo nosso"], ["arte", "Arte nova"]];
 let orc = null; // rascunho do orçamento: cabeçalho + itens já calculados
-function novoOrc(tipo) { if (tipo) orcTipo = tipo; orc = { cliente: "", vend: U.id, prazo: somaDias(2), itens: [], calc: true, desc: "" }; }
+function novoOrc(tipo, extra) { if (tipo) orcTipo = tipo; orc = Object.assign({ cliente: "", vend: U.id, prazo: somaDias(2), itens: [], calc: true, desc: "" }, extra || {}); }
 function telaOrcar() {
   if (!orc) novoOrc();
   const tot = orc.itens.reduce((s, i) => ({ cf: s.cf + i.cf, rev: s.rev + i.rev }), { cf: 0, rev: 0 });
   const nI = orc.itens.length;
-  $("#main").innerHTML =
+  const ped = orc.pedidoId ? S.dem.find((x) => x.id === orc.pedidoId) : null;
+  $("#main").innerHTML = (ped ? '<div class="note"><b>Pedido nº ' + ped.id + " de " + esc(nomeDe(ped.criadoPor)) + "</b><br>" + ped.itens.map((i) => esc(i.servico) + ": " + esc(i.desc)).join("<br>") + (ped.obs ? "<br>Obs.: " + esc(ped.obs) : "") + "</div>" + (ped.itens.some((i) => i.anexos.length) ? '<div class="photo-prev">' + ped.itens.flatMap((i) => i.anexos).map((a) => '<img src="' + fu(a) + '" alt="Referência">').join("") + "</div>" : "") : "") +
     '<form class="form" id="oCab" autocomplete="off"><div class="field"><label for="oCli">Cliente</label><input id="oCli" placeholder="Nome do cliente" value="' + esc(orc.cliente) + '"></div>' +
     '<div class="grid2"><div class="field"><label for="oVend">Vendedor</label><select id="oVend">' + vendedoresLista(orc.vend).map((p) => '<option value="' + p.id + '"' + (orc.vend === p.id ? " selected" : "") + ">" + esc(p.nome) + "</option>").join("") + '</select></div><div class="field"><label for="oPrazo">Responder até</label><input id="oPrazo" type="date" value="' + orc.prazo + '"></div></div></form>' +
     (nI ? '<div class="section-title"><h2>Itens do orçamento</h2><span>' + nI + (nI > 1 ? " itens" : " item") + '</span></div><div class="list">' + orc.itens.map((it, k) => '<div class="card"><div class="row"><span><b>' + esc(it.desc) + '</b><br><small style="color:var(--muted)">' + esc(it.servico) + "</small>" + (it.ajustado ? ' <span class="pill tag-re">valor ajustado</span>' : "") + '</span><button type="button" class="iconbtn" style="background:var(--surface-2)" data-rm="' + k + '" aria-label="Remover item">' + ic("x") + '</button></div><div class="meta">' + (it.cf === it.rev ? "<span>Valor <b class=\"num\">" + brl(it.cf) + "</b></span>" : "<span>Consumidor <b class=\"num\">" + brl(it.cf) + "</b></span><span>Revenda <b class=\"num\">" + brl(it.rev) + "</b></span>") + "</div></div>").join("") + "</div>" : "") +
@@ -969,9 +1091,21 @@ function telaOrcar() {
     if (!orc.cliente.trim()) { toast("Escreva o nome do cliente."); $("#oCli").focus(); return; }
     const bt = $("#oSalvar"); if (bt.dataset.ok) return; bt.dataset.ok = "1"; bt.textContent = "Salvando...";
     try {
-      const tipos = [...new Set(orc.itens.map((i) => NOMES_ORC[i.tipo]))], id = await proximoNumero();
+      const ped = orc.pedidoId ? S.dem.find((x) => x.id === orc.pedidoId) : null;
+      const tipos = [...new Set(orc.itens.map((i) => NOMES_ORC[i.tipo]))], id = ped ? ped.id : await proximoNumero();
+      const novosItens = orc.itens.map((i) => ({ id: uid(), servico: i.servico, desc: i.desc, valor: null, anexos: [], fase: "iniciar", fotoFinal: [], orcCf: i.cf, orcRev: i.rev, ajustado: !!i.ajustado, tipo: i.tipo, det: i.det || "" }));
+      if (ped) {
+        ped.pedidoItens = ped.itens; Object.assign(ped, { cliente: orc.cliente.trim(), vend: orc.vend, prazo: orc.prazo, status: "orcamento", orc: { tipo: tipos.length > 1 ? "com " + tipos.length + " tipos" : tipos[0], cf: ROUND1(tot.cf), rev: ROUND1(tot.rev), planilha: false }, itens: novosItens });
+        ped.hist.push([diaISO(HOJE), "Orçamento feito por " + U.nome + " (" + brl(tot.cf) + ")"]);
+        await salvarDem(ped);
+        const para = temLogin(ped.criadoPor) ? ped.criadoPor : temLogin(ped.vend) ? ped.vend : null;
+        if (para && para !== U.id) await gravarDoc("aviso", uid(), { para, txt: "Orçamento pronto: " + ped.cliente + " (" + brl(tot.cf) + ")", dem: ped.id, lido: false, quando: diaISO(HOJE), tipo: "orc" }).catch(() => {});
+        toast("Orçamento nº " + id + " pronto." + (para && para !== U.id ? " " + nomeDe(para) + " recebeu o aviso para mandar ao cliente." : ""));
+        orc = null; tela = "acomp"; form = null; render(); window.scrollTo(0, 0);
+        orcParaPlanilha(id); return;
+      }
       const d = { id, cliente: orc.cliente.trim(), vend: orc.vend, criadoPor: U.id, data: diaISO(HOJE), prazo: orc.prazo, status: "orcamento", orc: { tipo: tipos.length > 1 ? "com " + tipos.length + " tipos" : tipos[0], cf: ROUND1(tot.cf), rev: ROUND1(tot.rev), planilha: false },
-        itens: orc.itens.map((i) => ({ id: uid(), servico: i.servico, desc: i.desc, valor: null, anexos: [], fase: "iniciar", fotoFinal: [], orcCf: i.cf, orcRev: i.rev, ajustado: !!i.ajustado, tipo: i.tipo, det: i.det || "" })),
+        itens: novosItens,
         fotoEntrega: [], entregueEm: null, interno: false, venda: null, contato: "", obs: "", retrabalhos: [], hist: [[diaISO(HOJE), "Orçamento nº " + id + " feito por " + U.nome + " (" + orc.itens.length + (orc.itens.length > 1 ? " itens, " : " item, ") + brl(tot.cf) + ")"]], _v: 0 };
       await salvarDem(d);
       toast("Orçamento nº " + id + " salvo com " + orc.itens.length + (orc.itens.length > 1 ? " itens" : " item") + ". Está no Acompanhamento e na agenda.");
@@ -1083,6 +1217,7 @@ function calculadora() {
       '<div class="price"><span>Consumidor final</span><b class="num">' + brl(c.cf) + '</b></div><div class="price"><span>Revenda</span><b class="num">' + brl(c.rev) + "</b></div>") + "</div>" +
       (orcTipo === "las" ? '<div class="breakdown"><div><span>Material calculado</span><span class="num">' + q.m2.toLocaleString("pt-BR", { maximumFractionDigits: 4 }) + " m²</span></div></div>" : "") +
       (orcTipo === "grav" ? '<small style="color:var(--muted)">Preço único, sem valor de revenda. Para desconto, mude o valor.</small>' : "") +
+      (orcTipo === "bor" && c.minimo ? '<div class="note" style="background:var(--warn-soft);color:var(--warn)">Pela conta daria ' + brl(c.conta) + '. Valor mínimo do bordado para ligar a máquina: ' + brl(S.precos.bordadoMin ?? 20) + ".</div>" : "") +
       '<button type="button" class="btn block" id="oAdd">Adicionar ao orçamento</button></div>';
     $("#oAdd").onclick = () => {
       orc.itens.push({ tipo: orcTipo, servico: NOMES_ORC[orcTipo], desc: orc.desc.trim() || descPadrao(), cf: c.cf, rev: c.rev, ajustado, det: detalhe() });
@@ -1111,29 +1246,71 @@ function telaRelatorio() {
 }
 
 // ===================== Agenda em quadro semanal =====================
+const SVC_COR = { "Orçamentos": "var(--muted)", "Corte a laser": "var(--brand)", "Gravação UV": "var(--late)", "Bordado": "var(--info)", "Impressão": "var(--warn)" };
+const servPend = (d) => { const l = [...new Set(d.itens.filter((i) => i.fase !== "concluido").map((i) => i.servico))]; return l.length ? l : [...new Set(d.itens.map((i) => i.servico))]; };
+// Campos de produção: começa + dias + termina, sempre em sincronia.
+function progCampos(ini, fim, vazio) {
+  return '<div class="field"><label for="pgN">Quantos dias de produção</label><input id="pgN" type="number" min="1" max="60" inputmode="numeric" placeholder="Ex.: 3" value="' + (vazio ? "" : diasEntre(ini, fim)) + '"></div><div class="grid2"><div class="field"><label for="pgI">Começa</label><input id="pgI" type="date" value="' + ini + '"></div><div class="field"><label for="pgF">Termina</label><input id="pgF" type="date" value="' + fim + '"></div></div><small id="pgR" style="color:var(--muted)"></small>';
+}
+function ligaProg(d) {
+  const I = $("#pgI"), N = $("#pgN"), T = $("#pgF");
+  const msg = () => { $("#pgR").textContent = I.value && T.value && N.value ? "Na agenda: um bloco só, de " + dataBR(I.value) + " a " + dataBR(T.value) + " (" + diasEntre(I.value, T.value) + (diasEntre(I.value, T.value) > 1 ? " dias" : " dia") + "). Entrega combinada: " + dataBR(d.prazo) + "." + (d.prazo && T.value > d.prazo ? " Atenção: termina depois da entrega." : "") : "Entrega combinada: " + dataBR(d.prazo) + "."; };
+  const porDias = () => { const n = parseInt(N.value, 10); if (I.value && n >= 1) T.value = somaDias(n - 1, new Date(I.value + "T00:00:00")); msg(); };
+  I.oninput = porDias; N.oninput = porDias;
+  T.oninput = () => { if (I.value && T.value >= I.value) N.value = diasEntre(I.value, T.value); msg(); };
+  msg();
+  return () => { const a = I.value, n = parseInt(N.value, 10), b = T.value || a; if (!a) { toast("Escolha o dia de começar."); return null; } if (!(n >= 1)) { toast("Diga quantos dias de produção."); N.focus(); return null; } if (b < a) { toast("O fim não pode ser antes do começo."); return null; } return [a, b]; };
+}
+function editarProducao(d, novo) {
+  const ini = d.prodIni || diaISO(HOJE), fim = d.prodFim || ini, sv = servPend(d);
+  const el = sheet(novo ? "Quantos dias de produção?" : "Dias de produção",
+    '<div class="card" style="border-left:5px solid ' + (SVC_COR[sv[0]] || "var(--brand)") + '"><div class="row"><div class="cli">' + esc(d.cliente) + '</div>' + (d.venda ? '<span class="pill">Venda ' + d.venda + "</span>" : "") + '</div><div class="meta"><span>' + esc(sv.join(" + ")) + "</span><span>" + esc(nomeDe(d.vend)) + "</span><span>Entrega " + dataBR(d.prazo) + "</span></div></div>" +
+    (novo ? '<div class="note">A produção começa hoje, no dia do aceite. Diga quantos dias vai gastar. Dá para mudar depois tocando no bloco na agenda.</div>' : "") +
+    '<div class="form" style="gap:10px">' + progCampos(ini, fim, novo && !d.prodIni) + '<div class="btns"><button type="button" class="btn ghost" id="pgAb">' + (novo ? "Depois" : "Abrir pedido") + '</button><button type="button" class="btn" id="pgO">Salvar</button></div></div>');
+  const ler = ligaProg(d);
+  if (novo) setTimeout(() => $("#pgN") && $("#pgN").focus(), 50);
+  $("#pgAb").onclick = () => (novo ? fecharSheet() : abrirDem(d.id));
+  $("#pgO").onclick = () => { const r = ler(); if (!r) return; d.prodIni = r[0]; d.prodFim = r[1]; registra(d, "Produção de " + dataBR(r[0]) + " a " + dataBR(r[1]) + " (" + diasEntre(r[0], r[1]) + (diasEntre(r[0], r[1]) > 1 ? " dias" : " dia") + ")"); };
+}
 function telaAgenda() {
   const seg = new Date(HOJE); seg.setDate(seg.getDate() - ((seg.getDay() + 6) % 7) + semana * 7);
   const dias = [0, 1, 2, 3, 4, 5, 6].map((k) => somaDias(k, seg));
-  const LINHAS = ["Orçamentos", ...SERVICOS];
-  const cor = { "Orçamentos": "var(--muted)", "Corte a laser": "var(--brand)", "Gravação UV": "var(--late)", "Bordado": "var(--info)", "Impressão": "var(--warn)" };
   const hoje = diaISO(HOJE);
-  // cada item ainda não pronto entra na linha do seu serviço, no dia da entrega combinada; atrasados vão para hoje
-  const ev = [];
+  const prod = [], orcs = [], semProg = [];
   S.dem.forEach((d) => {
-    const F = fase(d); if (!d.prazo) return;
-    const dia = d.prazo < hoje ? hoje : d.prazo, late = d.prazo < hoje;
-    if (F === "orcamento") ev.push({ linha: "Orçamentos", dia, late, d, txt: d.itens[0].desc + (d.itens.length > 1 ? " +" + (d.itens.length - 1) : "") });
-    else if (["iniciar", "producao"].includes(F)) d.itens.filter((i) => i.fase !== "concluido").forEach((i) => ev.push({ linha: i.servico, dia, late, d, txt: i.desc }));
+    const F = fase(d);
+    if (F === "orcamento") { if (!d.prazo) return; const late = d.prazo < hoje, dia = late ? hoje : d.prazo; orcs.push({ ini: dia, fim: dia, late, d, cor: SVC_COR["Orçamentos"], sub: (d.orc ? "Responder cliente" : "Fazer orçamento") + " · " + nomeDe(d.vend), per: late ? "atrasado · era " + dataBR(d.prazo) : "responder até " + dataBR(d.prazo) }); }
+    else if (["iniciar", "producao"].includes(F)) {
+      if (!d.prodIni) { semProg.push(d); return; }
+      let ini = d.prodIni, fim = d.prodFim && d.prodFim >= d.prodIni ? d.prodFim : d.prodIni; const late = fim < hoje, total = diasEntre(ini, fim);
+      const per = late ? "atrasado · era até " + dataBR(fim) : total > 1 ? dataBR(ini) + " a " + dataBR(fim) + " · " + total + " dias" : dataBR(ini) + " · 1 dia";
+      if (late) { ini = hoje; fim = hoje; }
+      const sv = servPend(d); prod.push({ ini, fim, late, d, cor: SVC_COR[sv[0]], sub: sv.join(" + ") + " · " + nomeDe(d.vend), per });
+    }
   });
-  const fmt = (iso) => { const x = new Date(iso + "T00:00:00"); return x.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "") + " " + String(x.getDate()).padStart(2, "0"); };
+  const naSemana = (e) => e.fim >= dias[0] && e.ini <= dias[6];
+  const linha = (e, attr) => {
+    const a = e.ini < dias[0] ? 0 : dias.indexOf(e.ini), b = e.fim > dias[6] ? 6 : dias.indexOf(e.fim), n = b - a + 1;
+    const info = "<b>" + (e.ini < dias[0] ? "◀ " : "") + esc(e.d.cliente) + (e.fim > dias[6] ? " ▶" : "") + "</b><small>" + esc(e.sub) + "</small><small>" + e.per + "</small>";
+    let h = '<div class="g-row">' + dias.map((x, k) => '<i class="g-cell' + (x === hoje ? " today" : "") + '" style="grid-column:' + (k + 1) + '"></i>').join("");
+    h += '<button type="button" class="g-blk' + (e.late ? " late" : "") + (e.ini < dias[0] ? " cont-l" : "") + (e.fim > dias[6] ? " cont-r" : "") + (n < 3 ? " curto" : "") + '" style="grid-column:' + (a + 1) + " / " + (b + 2) + ";--c:" + (e.late ? "var(--late)" : e.cor) + '" ' + attr + '="' + e.d.id + '" aria-label="' + esc(e.d.cliente) + '">' + (n >= 3 ? info : e.late ? "!" : attr === "data-d" ? "Orç." : n + (n > 1 ? " dias" : " dia")) + "</button>";
+    if (n < 3) h += 6 - b >= 3 ? '<button type="button" class="g-lbl' + (e.late ? " late" : "") + '" style="grid-column:' + (b + 2) + ' / 8" ' + attr + '="' + e.d.id + '">' + info + "</button>" : '<button type="button" class="g-lbl esq' + (e.late ? " late" : "") + '" style="grid-column:1 / ' + (a + 1) + '" ' + attr + '="' + e.d.id + '">' + info + "</button>";
+    return h + "</div>";
+  };
+  const ord = (x, y) => x.ini.localeCompare(y.ini) || x.fim.localeCompare(y.fim);
+  const pS = prod.filter(naSemana).sort(ord), oS = orcs.filter(naSemana).sort(ord);
   const mesAno = new Date(dias[0] + "T00:00:00").toLocaleDateString("pt-BR", { day: "numeric", month: "short" }) + " a " + new Date(dias[6] + "T00:00:00").toLocaleDateString("pt-BR", { day: "numeric", month: "short" });
+  const cab = dias.map((d) => { const x = new Date(d + "T00:00:00"); return '<span class="' + (d === hoje ? "today" : "") + '">' + x.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "") + "<b>" + String(x.getDate()).padStart(2, "0") + "</b></span>"; }).join("");
   $("#main").innerHTML = '<div class="weeknav"><button type="button" id="wPrev" aria-label="Semana anterior">' + ic("back") + "</button><b>" + (semana === 0 ? "Esta semana" : semana === 1 ? "Próxima semana" : semana === -1 ? "Semana passada" : "Semana") + ' <span style="font-family:var(--f-body);font-weight:500;font-size:13px;color:var(--muted)">' + mesAno + '</span></b><button type="button" id="wNext" aria-label="Próxima semana">' + ic("next") + "</button></div>" +
-    '<div class="legend">' + LINHAS.map((l) => '<span><i style="background:' + cor[l] + '"></i>' + l + "</span>").join("") + '<span><i style="background:var(--late-soft);border:1px solid var(--late)"></i>Atrasado</span></div>' +
-    '<div class="board-wrap"><table class="board"><thead><tr><th class="rowh"></th>' + dias.map((d) => '<th class="' + (d === hoje ? "today" : "") + '">' + fmt(d) + "</th>").join("") + "</tr></thead><tbody>" +
-    LINHAS.map((l) => '<tr><th class="rowh" style="box-shadow:inset 4px 0 0 ' + cor[l] + '">' + l + "</th>" + dias.map((d) => '<td class="' + (d === hoje ? "today" : "") + '">' + ev.filter((e) => e.linha === l && e.dia === d).map((e) => '<button type="button" class="chipd' + (e.late ? " late" : "") + '" data-d="' + e.d.id + '">' + esc(e.d.cliente) + "<small>" + esc(e.txt.slice(0, 34)) + (e.txt.length > 34 ? "…" : "") + (e.late ? " · era " + dataBR(e.d.prazo) : "") + "</small></button>").join("") + "</td>").join("") + "</tr>").join("") +
-    '</tbody></table></div><div class="note">Arraste o quadro para o lado para ver a semana toda. Cada item entra na linha do serviço, no dia da entrega combinada. Os atrasados ficam no dia de hoje, em vermelho. Os orçamentos entram no dia de responder.</div>';
+    (semProg.length ? '<div class="form" style="gap:8px"><div class="lbl" style="color:var(--warn)">Sem dias de produção (' + semProg.length + ')</div><div class="agenda-sem">' + semProg.sort((a, b) => (a.prazo || "").localeCompare(b.prazo || "")).map((d) => '<button type="button" class="chipd' + (atrasada(d) ? " late" : "") + '" data-g="' + d.id + '">' + esc(d.cliente) + "<small>" + esc(servPend(d).join(", ")) + " · " + esc(nomeDe(d.vend)) + " · entrega " + dataBR(d.prazo) + "</small></button>").join("") + '</div><small style="color:var(--muted)">' + (casa() ? "Toque para dizer quantos dias de produção." : "O Júnior ainda vai dizer os dias de produção.") + "</small></div>" : "") +
+    '<div class="legend">' + SERVICOS.map((l) => '<span><i style="background:' + SVC_COR[l] + '"></i>' + l + "</span>").join("") + '<span><i style="background:var(--late-soft);border:1px solid var(--late)"></i>Atrasado</span></div>' +
+    '<div class="gantt"><div class="g-head">' + cab + "</div>" +
+    '<div class="g-sec">Produção · ' + pS.length + "</div>" + (pS.length ? pS.map((e) => linha(e, "data-g")).join("") : '<div class="g-vazio">Nada em produção nesta semana.</div>') +
+    '<div class="g-sec">Orçamentos para responder · ' + oS.length + "</div>" + (oS.length ? oS.map((e) => linha(e, "data-d")).join("") : '<div class="g-vazio">Nenhum orçamento para responder nesta semana.</div>') +
+    '</div><div class="note">Cada venda aparece como um bloco só, do dia que começa até o dia que termina a produção. ' + (casa() ? "Toque no bloco para mudar os dias. " : "") + "Os atrasados ficam no dia de hoje, em vermelho.</div>";
   $("#wPrev").onclick = () => { semana--; telaAgenda(); }; $("#wNext").onclick = () => { semana++; telaAgenda(); };
-  document.querySelectorAll("[data-d]").forEach((b) => (b.onclick = () => abrirDem(+b.dataset.d)));
+  document.querySelectorAll("#main [data-d]").forEach((b) => (b.onclick = () => abrirDem(+b.dataset.d)));
+  document.querySelectorAll("#main [data-g]").forEach((b) => (b.onclick = () => { const d = S.dem.find((x) => x.id === +b.dataset.g); casa() ? editarProducao(d) : abrirDem(d.id); }));
 }
 
 // ===================== Avisos, Pessoas e Preços =====================
@@ -1157,12 +1334,28 @@ function telaMinhas() {
   $("#mB").oninput = (e) => { minBusca = e.target.value; const pos = e.target.selectionStart; telaMinhas(); const i = $("#mB"); i.focus(); i.setSelectionRange(pos, pos); };
   document.querySelectorAll("#mL [data-d]").forEach((x) => (x.onclick = () => abrirDem(+x.dataset.d)));
 }
-function avisosAbertos() { return S.avisos.filter((a) => { if (a.para !== U.id) return false; const d = S.dem.find((x) => x.id === a.dem); return d && !["entregue", "cancelada"].includes(fase(d)); }); }
+function avisosAbertos() { return S.avisos.filter((a) => { if (a.para !== U.id) return false; const d = S.dem.find((x) => x.id === a.dem); if (!d || ["entregue", "cancelada"].includes(fase(d))) return false; if (a.tipo === "pedido") return !d.orc; if (a.tipo === "orc") return d.status === "orcamento"; return fase(d) === "concluido"; }); }
 function telaAvisos() {
-  const l = avisosAbertos();
-  $("#main").innerHTML = '<div class="note">Quando todos os itens de uma demanda ficam prontos, quem vendeu recebe o aviso aqui. Depois da entrega, o aviso sai daqui e o pedido fica em Minhas vendas.</div><div class="list">' +
-    (l.length ? l.map((a) => { const d = S.dem.find((x) => x.id === a.dem); return d ? cardQuadro(d, { av: S.avisos.indexOf(a), novo: !a.lido, quando: a.quando }) : ""; }).join("") : '<div class="empty">Nenhum aviso por enquanto.</div>') + "</div>";
-  document.querySelectorAll("[data-av]").forEach((b) => (b.onclick = () => { const a = S.avisos[+b.dataset.av]; if (!a.lido) { a.lido = true; gravarDoc("aviso", a._id, avisoLimpo(a), a._v).catch(() => {}); } render(); abrirDem(a.dem); }));
+  if (casa()) {
+    const l = avisosAbertos();
+    $("#main").innerHTML = '<div class="list">' + (l.length ? l.map((a) => { const d = S.dem.find((x) => x.id === a.dem); return d ? (a.tipo === "pedido" ? '<div class="lin" style="font-weight:600;color:var(--warn)">Pedido de orçamento</div>' : "") + cardQuadro(d, { av: S.avisos.indexOf(a), novo: !a.lido, quando: a.quando }) : ""; }).join("") : '<div class="empty">Nenhum aviso por enquanto.</div>') + "</div>";
+    document.querySelectorAll("[data-av]").forEach((b) => (b.onclick = () => { const a = S.avisos[+b.dataset.av]; if (!a.lido) { a.lido = true; gravarDoc("aviso", a._id, avisoLimpo(a), a._v).catch(() => {}); } render(); abrirDem(a.dem); }));
+    return;
+  }
+  const novo = (d, tipo) => S.avisos.find((a) => a.para === U.id && a.dem === d.id && !a.lido && (a.tipo || "pronto") === tipo);
+  const prontos = S.dem.filter((d) => minha(d) && fase(d) === "concluido").sort((a, b) => (a.prazo || "").localeCompare(b.prazo || ""));
+  const orcs = S.dem.filter((d) => minha(d) && d.status === "orcamento" && d.pedido && d.orc);
+  const espera = S.dem.filter((d) => minha(d) && d.status === "orcamento" && d.pedido && !d.orc);
+  const bloco = (d, tipo, botao) => { const a = novo(d, tipo); return '<div class="aviso-bloco">' + cardQuadro(d, a ? { av: S.avisos.indexOf(a), novo: true, quando: a.quando } : null) + botao + "</div>"; };
+  $("#main").innerHTML = '<h2 class="aviso-tit">Prontos para entrega</h2><p class="aviso-sub">Tudo que já está pronto. Quando o cliente buscar, toque em <b>Entregue</b>.</p>' +
+    '<div class="list">' + (prontos.length ? prontos.map((d) => bloco(d, "pronto", '<button type="button" class="btn block" data-ent="' + d.id + '">Entregue</button>')).join("") : '<div class="empty">Nada pronto para entregar agora.</div>') + "</div>" +
+    (orcs.length ? '<h2 class="aviso-tit" style="font-size:22px;margin-top:10px">Orçamentos respondidos</h2><p class="aviso-sub">O Júnior respondeu. Mande para o cliente.</p><div class="list">' + orcs.map((d) => bloco(d, "orc", '<button type="button" class="btn ghost block" data-cli="' + d.id + '">Mandar para o cliente</button>')).join("") + "</div>" : "") +
+    (espera.length ? '<div class="section-title"><h2>Esperando o Júnior</h2><span>' + espera.length + '</span></div><div class="list">' + espera.map((d) => cardQuadro(d)).join("") + "</div>" : "");
+  const lido = (id) => S.avisos.forEach((a) => { if (a.para === U.id && a.dem === id) marcarLido(a); });
+  document.querySelectorAll("[data-av]").forEach((b) => (b.onclick = () => { const a = S.avisos[+b.dataset.av]; lido(a.dem); render(); abrirDem(a.dem); }));
+  document.querySelectorAll("#main [data-d]").forEach((b) => (b.onclick = () => abrirDem(+b.dataset.d)));
+  document.querySelectorAll("[data-ent]").forEach((b) => (b.onclick = () => { lido(+b.dataset.ent); abrirDem(+b.dataset.ent, "entrega"); }));
+  document.querySelectorAll("[data-cli]").forEach((b) => (b.onclick = () => { lido(+b.dataset.cli); render(); mandarCliente(S.dem.find((x) => x.id === +b.dataset.cli)); }));
 }
 function telaPessoas() {
   const papel = { admin: "Vê e altera tudo, cadastra pessoas, PINs e preços", pers: "Orçamentos, produção, vendas sem entrada, relatórios e agenda", vend: "Dá entrada nas próprias vendas e acompanha as demandas", inativo: "Não entra mais no app" };
@@ -1194,14 +1387,14 @@ function telaPrecos() {
   const LAB = [["simples", "Garrafa simples/nome"], ["simbolo", "Garrafa com símbolo que já temos"], ["arte", "Garrafa com arte nova"], ["lado2", "2º lado da garrafa (nome)"], ["faca", "Faca/canivete"], ["caneta", "Caneta"], ["lapis", "Lápis de cor (cada)"]];
   const pend = S.dem.filter((d) => d.orc && d.orc.planilha === false && d.status !== "cancelada");
   $("#main").innerHTML = '<div class="note">Só você vê e muda esta tela. Os preços de impressão e de corte a laser vêm das planilhas no Drive.</div>' +
-    '<form class="form" id="fPr"><div class="lbl">Bordado</div><div class="field"><label for="prB">R$ por mil pontos</label><input id="prB" type="number" min="0" step="0.1" inputmode="decimal" value="' + S.precos.bordadoMil + '"><small>As outras pessoas só veem o valor final.</small></div>' +
+    '<form class="form" id="fPr"><div class="lbl">Bordado</div><div class="grid2"><div class="field"><label for="prB">R$ por mil pontos</label><input id="prB" type="number" min="0" step="0.1" inputmode="decimal" value="' + S.precos.bordadoMil + '"></div><div class="field"><label for="prBm">Valor mínimo R$</label><input id="prBm" type="number" min="0" step="1" inputmode="decimal" value="' + (S.precos.bordadoMin ?? 20) + '"></div></div><small style="color:var(--muted)">O mínimo é para ligar a máquina: nenhum bordado sai por menos. As outras pessoas só veem o valor final.</small>' +
     '<div class="lbl">Gravação UV (R$ por unidade)</div><div class="grid2">' + LAB.map(([k, t]) => '<div class="field"><label for="pg_' + k + '">' + t + '</label><input id="pg_' + k + '" type="number" min="0" step="0.5" inputmode="decimal" value="' + G[k] + '"></div>').join("") + '</div><small style="color:var(--muted)">"Outro" não tem preço na tabela: quem faz o orçamento digita o valor.</small>' +
     '<button class="btn" type="submit">Salvar preços</button></form>' +
     '<form class="form" id="fGo" autocomplete="off"><div class="lbl">Ligação com o Google (planilhas e fotos no Drive)</div><div class="field"><label for="gUrl">Endereço do app do Google</label><input id="gUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" value="' + esc((S.google && S.google.url) || "") + '"><small>' + (S.google && S.google.url ? "Ligado." : "Ainda não ligado. Os orçamentos e as fotos ficam guardados no app e vão para o Drive depois.") + '</small></div><div class="btns"><button class="btn ghost" type="button" id="gTeste">Testar</button><button class="btn" type="submit">Salvar endereço</button></div>' +
     (pend.length ? '<div class="note" style="background:var(--warn-soft);color:var(--warn)">' + pend.length + (pend.length > 1 ? " orçamentos ainda não foram" : " orçamento ainda não foi") + ' para as planilhas.</div><button class="btn ghost" type="button" id="gPend">Mandar para as planilhas agora</button>' : "") + "</form>";
   $("#fPr").onsubmit = async (e) => {
     e.preventDefault(); const g = {}; LAB.forEach(([k]) => (g[k] = +$("#pg_" + k).value || 0));
-    try { await gravarDoc("cfg", "precos", { bordadoMil: +$("#prB").value || 0, grav: g }); toast("Preços salvos. Os próximos orçamentos já usam os valores novos."); } catch (er) { erroGravar(er); }
+    try { await gravarDoc("cfg", "precos", { bordadoMil: +$("#prB").value || 0, bordadoMin: +$("#prBm").value || 0, grav: g }); toast("Preços salvos. Os próximos orçamentos já usam os valores novos."); } catch (er) { erroGravar(er); }
   };
   const url = () => $("#gUrl").value.trim();
   $("#gTeste").onclick = async () => {
