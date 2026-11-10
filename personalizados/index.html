@@ -463,8 +463,8 @@ const valorDem = (d) => { const v = d.venda && S.vendas.find((x) => x.num === d.
 const situacao = (d) => { if (d.interno) return "Serviço interno"; const v = d.venda && S.vendas.find((x) => x.num === d.venda); return v ? (v.faturada ? "Faturada" : "Pré-venda") : "Sem venda no sistema"; };
 
 // ===================== Nuvem (Supabase do Sistema São João, tabelas pers_) =====================
-const API = "https://rmihonsfpvfanpisgxoq.supabase.co";
-const CHAVE = "sb_publishable_eF_XOAmP-rAooLYIxPctMg_Su_-IiXF";
+const API = "https://klukqdvmjjzbvvxqiwfw.supabase.co";
+const CHAVE = "sb_publishable_9dtWhE4a9VyB1mZqLIlxvA_KlQ-unTB";
 const INICIO_APP = "2026-11-12"; // vendas antes deste dia podem entrar já na fase em que estão
 const S = { dem: [], vendas: [], avisos: [], precos: { bordadoMil: 2, bordadoMin: 20, grav: Object.assign({}, GRAV_PADRAO) }, google: null, mmInfo: null, mmMeses: [] };
 const DB = { docs: {}, desde: null, pessoas: [] };
