@@ -1,6 +1,6 @@
 // App Personalizados: abre mesmo sem internet. Busca sempre a versão nova quando tem internet.
-const CACHE = "pers-app-3";
-const ARQ = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png"];
+const CACHE = "pers-app-4";
+const ARQ = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "marca.css", "marca.js", "logo-personalizados.png", "apple-touch-icon.png"];
 self.addEventListener("install", (e) => { self.skipWaiting(); e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ARQ))); });
 self.addEventListener("activate", (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener("fetch", (e) => {

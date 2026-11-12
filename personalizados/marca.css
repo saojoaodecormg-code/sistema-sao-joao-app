@@ -1,0 +1,22 @@
+/* Identidade São João Personalizados: fundo claro, logo oficial, verde da marca nas ações */
+:root,:root[data-theme="dark"]{--bg:#F5F7F6!important;--surface:#FFFFFF!important;--surface-2:#EDF2EF!important;--fg:#16201B!important;--muted:#5B6B62!important;--line:#D5DFD9!important;
+ --brand:#00A550!important;--brand-ink:#FFFFFF!important;--brand-soft:#DFF3E8!important;--navy:#111184;color-scheme:light!important}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#F5F7F6!important;--surface:#FFFFFF!important;--surface-2:#EDF2EF!important;--fg:#16201B!important;--muted:#5B6B62!important;--line:#D5DFD9!important;--brand:#00A550!important;--brand-ink:#FFFFFF!important;--brand-soft:#DFF3E8!important;--late:#c8312b!important;--late-soft:#fbe5e3!important;--warn:#a86a00!important;--warn-soft:#fff1d6!important;--info:#1f63b8!important;--info-soft:#e1ecfa!important;--ok:#00824a!important;--ok-soft:#dcf2e5!important;--gray-soft:#e7eae8!important;color-scheme:light!important}}
+body::before{background:#FFFFFF!important}
+.top{background:#FFFFFF!important;color:var(--fg)!important;border-bottom:1px solid var(--line)}
+.top .wrap{padding-block:8px!important;min-height:72px}
+.top h1{font-size:17px!important;color:var(--navy)}
+.top .who{color:var(--muted)!important;opacity:1!important}
+.marca-logo{height:56px;width:auto;flex:none;display:block}
+.top .iconbtn{background:var(--surface-2)!important;color:var(--fg)!important}
+.login-top{background:#FFFFFF!important;color:var(--fg)!important}
+.login-top .wrap{justify-items:center;text-align:center;padding-block:30px 18px!important}
+.login-top .marca-logo{height:150px}
+.login-top h1{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.login-top p{color:var(--muted);font-weight:600}
+.fab{background:var(--brand)!important;color:#fff!important;box-shadow:0 6px 18px rgba(0,165,80,.35)!important}
+/* Cabeçalho das telas de trabalho: logo e botões numa linha, título da tela logo abaixo */
+.top .wrap{flex-wrap:wrap;row-gap:2px!important;min-height:0}
+.top .marca-logo{margin-right:auto}
+.top h1{order:9;flex:1 1 100%!important;font-size:18px!important;line-height:1.25;padding-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .who{display:inline!important;margin-left:8px;font-size:12.5px}

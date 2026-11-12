@@ -3,14 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#009b52">
+<meta name="theme-color" content="#FFFFFF">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Personalizados">
+<meta name="apple-mobile-web-app-title" content="SJ Personaliz.">
 <title>Personalizados</title>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="marca.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap">
 <style>
@@ -38,7 +41,7 @@
   --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --f-body: "DM Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
 }
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) and (max-width:0px) {
   :root:not([data-theme="light"]) {
     --bg: #0f1512; --surface: #18201c; --surface-2: #212b26; --fg: #e8efeb; --muted: #9db0a5; --line: #2d3a33;
     --brand: #1fb76a; --brand-ink: #04170d; --brand-soft: #173a28; --late: #ff7a72; --late-soft: #3d1d1b;
@@ -222,7 +225,7 @@ tr.late td:first-child { box-shadow: inset 4px 0 0 var(--late); }
 }
 /* ---- v2: kanban, botão +, menus ---- */
 :root { --fab: #e72a30; --fab-ink: #ffffff; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --fab: #ff5a5f; --fab-ink: #2a0506; } }
+@media (prefers-color-scheme: dark) and (max-width:0px) { :root:not([data-theme="light"]) { --fab: #ff5a5f; --fab-ink: #2a0506; } }
 :root[data-theme="dark"] { --fab: #ff5a5f; --fab-ink: #2a0506; }
 .fab { position: fixed; right: max(18px, calc(env(safe-area-inset-right, 0px) + 18px)); bottom: calc(80px + env(safe-area-inset-bottom, 0px)); z-index: 25; width: 60px; height: 60px; border-radius: 50%; border: 0; background: var(--fab); color: var(--fab-ink); box-shadow: 0 6px 18px rgba(200, 30, 37, .35); display: grid; place-items: center; }
 .fab svg { width: 30px; height: 30px; }
@@ -645,7 +648,7 @@ async function carregarLista() {
 }
 function renderLogin() {
   const p = listaLogin.find((x) => x.id === selPessoa);
-  $("#app").innerHTML = '<div class="login"><div class="login-top"><div class="wrap"><h1>Personalizados</h1><p>Loja São João · vendas, demandas e produção</p></div></div>' +
+  $("#app").innerHTML = '<div class="login"><div class="login-top"><div class="wrap"><h1>Personalizados</h1><p>Vendas, demandas e produção</p></div></div>' +
     '<div class="wrap"><div class="lbl" style="padding-top:16px">Quem está usando?</div><div class="people">' +
     listaLogin.map((x) => '<button type="button" class="person' + (selPessoa === x.id ? " sel" : "") + '" data-p="' + x.id + '"><b>' + esc(x.nome) + "</b><small>" + esc(DESC_PAPEL[x.papel] || "") + "</small></button>").join("") +
     "</div>" + (loginMsg ? '<div class="note" style="background:var(--late-soft);color:var(--late)">' + esc(loginMsg) + "</div>" : "") +
@@ -1427,5 +1430,6 @@ document.addEventListener("click", (e) => {
 
 iniciar();
 </script>
+<script src="marca.js"></script>
 </body>
 </html>
