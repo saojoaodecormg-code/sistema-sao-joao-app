@@ -291,7 +291,8 @@ tr.late td:first-child { box-shadow: inset 4px 0 0 var(--late); }
 .board th.rowh { position: sticky; left: 0; background: var(--surface); z-index: 1; width: 92px; font-size: 12px; color: var(--fg); text-transform: none; letter-spacing: 0; }
 .board td.today { background: var(--brand-soft); }
 
-.gantt { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.gantt { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.g-inner { min-width: 560px; }
 .g-head, .g-row { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
 .g-head span { text-align: center; padding: 6px 0; font-size: 11px; text-transform: uppercase; letter-spacing: .03em; color: var(--muted); background: var(--surface-2); border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); line-height: 1.2; }
 .g-head span:last-child, .g-cell:nth-child(7) { border-right: 0; }
@@ -304,8 +305,10 @@ tr.late td:first-child { box-shadow: inset 4px 0 0 var(--late); }
 .g-blk, .g-lbl { grid-row: 1; position: relative; z-index: 1; min-width: 0; font: inherit; color: var(--fg); text-align: left; cursor: pointer; }
 .g-blk { margin: 6px 3px; padding: 6px 8px; border: 1px solid color-mix(in srgb, var(--c) 40%, var(--line)); border-left: 5px solid var(--c); border-radius: 10px; background: color-mix(in srgb, var(--c) 13%, var(--surface)); display: grid; gap: 1px; align-content: center; box-shadow: 0 1px 2px rgba(0,0,0,.06); }
 .g-blk.late { --c: var(--late); background: var(--late-soft); }
-.g-blk.curto { background: var(--c); border-color: var(--c); color: #fff; place-items: center; text-align: center; font-weight: 700; font-size: 12px; padding: 4px 2px; }
-.g-blk.curto.late { background: var(--late); }
+.g-blk.curto { padding: 5px 5px; }
+.g-blk.curto b, .g-blk.curto small { white-space: normal; overflow-wrap: break-word; text-overflow: clip; }
+.g-blk.curto b { font-size: 12.5px; }
+.g-blk.curto small { font-size: 11px; }
 .g-blk.cont-l { margin-left: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; }
 .g-blk.cont-r { margin-right: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; }
 .g-blk b, .g-lbl b { font-size: 13.5px; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -638,6 +641,12 @@ const minha = (d) => d.vend === U.id || d.criadoPor === U.id;
 const demoBar = () => faixaStatus();
 const vendasVisiveis = () => S.vendas.filter((v) => valorPers(v) > 0 && (casa() ? daCasa(v.vend) : v.vend === U.id));
 const semEntrada = () => vendasVisiveis().filter((v) => !S.dem.some((d) => d.venda === v.num));
+// Vendas das vendedoras ainda sem entrada: a casa (Marina e Júnior) só acompanha e cobra.
+const semEntradaVendedoras = () => { if (!casa()) return []; const minhas = vendasVisiveis(); return S.vendas.filter((v) => valorPers(v) > 0 && !minhas.includes(v) && !S.dem.some((d) => d.venda === v.num)).sort((a, b) => (a.data || "").localeCompare(b.data || "")); };
+function cardVendaVendedora(v) {
+  const dias = Math.max(0, diasEntre(v.data, diaISO(HOJE)) - 1);
+  return cardVenda(v).replace('<div class="btns">', '<div class="meta"><span class="pill' + (dias >= 2 ? " tag-late" : " st-producao") + '">Esperando ' + esc(nomeDe(v.vend)) + " dar entrada" + (dias ? " há " + dias + (dias > 1 ? " dias" : " dia") : " (venda de hoje)") + "</span></div>" + '<div class="btns">').replace('">Dar entrada</button>', '">Dar entrada por ela</button>').replace('class="btn" data-entrada', 'class="btn ghost" data-entrada');
+}
 
 // ===================== Login =====================
 let selPessoa = null, pin = "", listaLogin = ls.get("pers_lista") || [], loginMsg = "";
@@ -769,6 +778,7 @@ function telaVendas() {
   $("#main").innerHTML = '<div class="note">' + (casa() ? "Vendas do My Manager com serviço do Personalizados (170100 a 170104) no nome de quem não é vendedora: Yuri, Nelson, Júnior e Marina. As vendedoras dão entrada nas vendas delas." : "Suas vendas do My Manager com serviço do Personalizados. Dê entrada para o Personalizados começar.") + "</div>" + statusMM() +
     '<div class="section-title"><h2>Para dar entrada</h2><span>' + l.length + " vendas</span></div>" +
     '<div class="list">' + (l.length ? l.map(cardVenda).join("") : '<div class="empty">Tudo em dia. Nenhuma venda esperando entrada.</div>') + "</div>" +
+    (() => { const lv = semEntradaVendedoras(); return lv.length ? '<div class="section-title"><h2>Esperando a vendedora dar entrada</h2><span>' + lv.length + (lv.length > 1 ? " vendas" : " venda") + '</span></div><div class="note">Vendas das vendedoras com serviço do Personalizados que elas ainda não lançaram. Dá para cobrar delas, ou dar entrada por elas se precisar.</div><div class="list">' + lv.map(cardVendaVendedora).join("") + "</div>" : ""; })() +
     (aguard.length ? '<div class="section-title"><h2>Demandas sem venda</h2><span>' + aguard.length + '</span></div><div class="note">Criadas antes da venda. Quando a venda aparecer com o mesmo nome de cliente, use "Ligar à demanda já criada".</div><div class="list">' + aguard.map(cardDem).join("") + "</div>" : "");
   document.querySelectorAll("[data-entrada]").forEach((b) => (b.onclick = () => {
     const v = S.vendas.find((x) => x.num === b.dataset.entrada);
@@ -1296,8 +1306,7 @@ function telaAgenda() {
     const a = e.ini < dias[0] ? 0 : dias.indexOf(e.ini), b = e.fim > dias[6] ? 6 : dias.indexOf(e.fim), n = b - a + 1;
     const info = "<b>" + (e.ini < dias[0] ? "◀ " : "") + esc(e.d.cliente) + (e.fim > dias[6] ? " ▶" : "") + "</b><small>" + esc(e.sub) + "</small><small>" + e.per + "</small>";
     let h = '<div class="g-row">' + dias.map((x, k) => '<i class="g-cell' + (x === hoje ? " today" : "") + '" style="grid-column:' + (k + 1) + '"></i>').join("");
-    h += '<button type="button" class="g-blk' + (e.late ? " late" : "") + (e.ini < dias[0] ? " cont-l" : "") + (e.fim > dias[6] ? " cont-r" : "") + (n < 3 ? " curto" : "") + '" style="grid-column:' + (a + 1) + " / " + (b + 2) + ";--c:" + (e.late ? "var(--late)" : e.cor) + '" ' + attr + '="' + e.d.id + '" aria-label="' + esc(e.d.cliente) + '">' + (n >= 3 ? info : e.late ? "!" : attr === "data-d" ? "Orç." : n + (n > 1 ? " dias" : " dia")) + "</button>";
-    if (n < 3) h += 6 - b >= 3 ? '<button type="button" class="g-lbl' + (e.late ? " late" : "") + '" style="grid-column:' + (b + 2) + ' / 8" ' + attr + '="' + e.d.id + '">' + info + "</button>" : '<button type="button" class="g-lbl esq' + (e.late ? " late" : "") + '" style="grid-column:1 / ' + (a + 1) + '" ' + attr + '="' + e.d.id + '">' + info + "</button>";
+    h += '<button type="button" class="g-blk' + (e.late ? " late" : "") + (e.ini < dias[0] ? " cont-l" : "") + (e.fim > dias[6] ? " cont-r" : "") + (n < 3 ? " curto" : "") + '" style="grid-column:' + (a + 1) + " / " + (b + 2) + ";--c:" + (e.late ? "var(--late)" : e.cor) + '" ' + attr + '="' + e.d.id + '" aria-label="' + esc(e.d.cliente) + '">' + info + "</button>";
     return h + "</div>";
   };
   const ord = (x, y) => x.ini.localeCompare(y.ini) || x.fim.localeCompare(y.fim);
@@ -1307,10 +1316,11 @@ function telaAgenda() {
   $("#main").innerHTML = '<div class="weeknav"><button type="button" id="wPrev" aria-label="Semana anterior">' + ic("back") + "</button><b>" + (semana === 0 ? "Esta semana" : semana === 1 ? "Próxima semana" : semana === -1 ? "Semana passada" : "Semana") + ' <span style="font-family:var(--f-body);font-weight:500;font-size:13px;color:var(--muted)">' + mesAno + '</span></b><button type="button" id="wNext" aria-label="Próxima semana">' + ic("next") + "</button></div>" +
     (semProg.length ? '<div class="form" style="gap:8px"><div class="lbl" style="color:var(--warn)">Sem dias de produção (' + semProg.length + ')</div><div class="agenda-sem">' + semProg.sort((a, b) => (a.prazo || "").localeCompare(b.prazo || "")).map((d) => '<button type="button" class="chipd' + (atrasada(d) ? " late" : "") + '" data-g="' + d.id + '">' + esc(d.cliente) + "<small>" + esc(servPend(d).join(", ")) + " · " + esc(nomeDe(d.vend)) + " · entrega " + dataBR(d.prazo) + "</small></button>").join("") + '</div><small style="color:var(--muted)">' + (casa() ? "Toque para dizer quantos dias de produção." : "O Júnior ainda vai dizer os dias de produção.") + "</small></div>" : "") +
     '<div class="legend">' + SERVICOS.map((l) => '<span><i style="background:' + SVC_COR[l] + '"></i>' + l + "</span>").join("") + '<span><i style="background:var(--late-soft);border:1px solid var(--late)"></i>Atrasado</span></div>' +
-    '<div class="gantt"><div class="g-head">' + cab + "</div>" +
+    '<div class="gantt"><div class="g-inner"><div class="g-head">' + cab + "</div>" +
     '<div class="g-sec">Produção · ' + pS.length + "</div>" + (pS.length ? pS.map((e) => linha(e, "data-g")).join("") : '<div class="g-vazio">Nada em produção nesta semana.</div>') +
     '<div class="g-sec">Orçamentos para responder · ' + oS.length + "</div>" + (oS.length ? oS.map((e) => linha(e, "data-d")).join("") : '<div class="g-vazio">Nenhum orçamento para responder nesta semana.</div>') +
-    '</div><div class="note">Cada venda aparece como um bloco só, do dia que começa até o dia que termina a produção. ' + (casa() ? "Toque no bloco para mudar os dias. " : "") + "Os atrasados ficam no dia de hoje, em vermelho.</div>";
+    '</div></div><div class="note">' + (innerWidth < 760 ? "Arraste o quadro para o lado para ver a semana toda. " : "") + 'Cada venda aparece como um bloco só, do dia que começa até o dia que termina a produção. ' + (casa() ? "Toque no bloco para mudar os dias. " : "") + "Os atrasados ficam no dia de hoje, em vermelho.</div>";
+  { const g = $("#main .gantt"), t = g && g.querySelector(".g-head span.today"); if (g && t && g.scrollWidth > g.clientWidth) g.scrollLeft = Math.max(0, t.offsetLeft - 8); }
   $("#wPrev").onclick = () => { semana--; telaAgenda(); }; $("#wNext").onclick = () => { semana++; telaAgenda(); };
   document.querySelectorAll("#main [data-d]").forEach((b) => (b.onclick = () => abrirDem(+b.dataset.d)));
   document.querySelectorAll("#main [data-g]").forEach((b) => (b.onclick = () => { const d = S.dem.find((x) => x.id === +b.dataset.g); casa() ? editarProducao(d) : abrirDem(d.id); }));
