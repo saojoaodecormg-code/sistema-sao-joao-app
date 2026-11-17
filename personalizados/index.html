@@ -242,6 +242,13 @@ tr.late td:first-child { box-shadow: inset 4px 0 0 var(--late); }
 .col .card { box-shadow: none; padding: 10px 12px; }
 .col .card .cli { font-size: 14.5px; }
 .col .empty { padding: 14px 6px; font-size: 13px; }
+.kan-tabs { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 10px; scrollbar-width: none; }
+.kan-tabs::-webkit-scrollbar { display: none; }
+.kan-tabs button { flex: none; font: inherit; font-size: 13px; font-weight: 600; border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 999px; padding: 7px 12px; cursor: pointer; white-space: nowrap; }
+.kan-tabs button span { margin-left: 6px; font-size: 12px; color: var(--muted); }
+.kan-tabs button.on { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); }
+.kan-tabs button.on span { color: var(--brand-ink); opacity: .85; }
+.kanban .col { max-height: calc(100dvh - 250px); overflow-y: auto; overscroll-behavior: contain; align-content: start; }
 .f-orcamento { background: var(--surface-2); color: var(--muted); }
 .f-iniciar { background: var(--info-soft); color: var(--info); }
 .f-producao { background: var(--warn-soft); color: var(--warn); }
@@ -925,7 +932,12 @@ function telaAcomp() {
     else l.sort((a, b) => (a.prazo || "").localeCompare(b.prazo || ""));
     return '<div class="col"><h3>' + t + "<span>" + l.length + "</span></h3>" + (k === "entregue" ? '<small style="color:var(--muted);padding:0 4px">Últimos 7 dias, o mais novo em cima</small>' : "") + (l.length ? l.map((d) => cardQuadro(d)).join("") : '<div class="empty">Nada aqui.</div>') + extra + "</div>";
   }).join("");
-  $("#main").innerHTML = '<div class="note">Arraste para o lado para ver todas as colunas. Toque num cartão para abrir e mudar de fase.</div><div class="kanban-wrap"><div class="kanban">' + cols + "</div></div>";
+  const tabs = FASES.map(([k, t], i) => { const n = k === "entregue" ? S.dem.filter((d) => fase(d) === k && (d.entregueEm || "") >= lim).length : S.dem.filter((d) => fase(d) === k).length; return '<button type="button" data-kt="' + i + '">' + t + "<span>" + n + "</span></button>"; }).join("");
+  $("#main").innerHTML = '<div class="kan-tabs" id="kTabs">' + tabs + '</div><div class="kanban-wrap"><div class="kanban">' + cols + "</div></div>" + '<div class="note" style="margin-top:10px">Toque no nome da coluna lá em cima para ir até ela, ou arraste para o lado. Cada coluna rola para baixo por dentro. Toque num cartão para abrir e mudar de fase.</div>';
+  { const w = $(".kanban-wrap"), cs = [...document.querySelectorAll(".kanban .col")], bs = [...document.querySelectorAll("[data-kt]")];
+    const marca = () => { const x = w.scrollLeft + 20; let i = 0; cs.forEach((c, k) => { if (c.offsetLeft - cs[0].offsetLeft <= x) i = k; }); if (w.scrollLeft + w.clientWidth >= w.scrollWidth - 4) { const vis = cs.filter((c) => c.offsetLeft - cs[0].offsetLeft >= w.scrollLeft - 4); if (vis.length > 1) i = Math.max(i, cs.indexOf(vis[0])); if (w._k != null && vis.includes(cs[w._k])) i = w._k; } bs.forEach((b, k) => b.classList.toggle("on", k === i)); };
+    bs.forEach((b) => (b.onclick = () => { const c = cs[+b.dataset.kt]; w._k = +b.dataset.kt; w.scrollTo({ left: c.offsetLeft - cs[0].offsetLeft, behavior: "smooth" }); bs.forEach((x) => x.classList.toggle("on", x === b)); }));
+    w.addEventListener("scroll", () => { clearTimeout(w._t); w._t = setTimeout(marca, 80); }); marca(); }
   document.querySelectorAll("[data-d]").forEach((b) => (b.onclick = () => abrirDem(+b.dataset.d)));
   $("#buscaEnt").onclick = buscarEntregues;
 }
