@@ -524,6 +524,8 @@ function montar() {
   S.dem = docs.filter((x) => x.col === "dem").map((x) => Object.assign({ status: null, contato: "", obs: "", interno: false, venda: null, orc: null, fotoEntrega: [], entregueEm: null, retrabalhos: [], hist: [], itens: [] }, clone(x.data), { id: +x.id, _v: x.v }))
     .map((d) => { d.itens.forEach((i) => { i.anexos = i.anexos || []; i.fotoFinal = i.fotoFinal || []; i.fase = i.fase || "iniciar"; }); return d; })
     .sort((a, b) => b.id - a.id);
+  // Cliente 001 "Consumidor Direto": se a venda já tem o nome digitado, mostra esse nome
+  S.dem.forEach((d) => { if (!d.venda || !/consumidor/i.test(d.cliente || "")) return; const v = S.vendas.find((x) => x.num === String(d.venda)); if (v && v.cliente && !/consumidor|sem nome/i.test(v.cliente)) d.cliente = v.cliente; });
   S.avisos = docs.filter((x) => x.col === "aviso").map((x) => Object.assign(clone(x.data), { _id: x.id, _v: x.v })).sort((a, b) => (b.quando || "").localeCompare(a.quando || ""));
   const pr = docs.find((x) => x.col === "cfg" && x.id === "precos");
   S.precos = { bordadoMil: 2, bordadoMin: 20, grav: Object.assign({}, GRAV_PADRAO) };
@@ -640,9 +642,10 @@ const casa = () => U.papel !== "vend";
 const minha = (d) => d.vend === U.id || d.criadoPor === U.id;
 const demoBar = () => faixaStatus();
 const vendasVisiveis = () => S.vendas.filter((v) => valorPers(v) > 0 && (casa() ? daCasa(v.vend) : v.vend === U.id));
-const semEntrada = () => vendasVisiveis().filter((v) => !S.dem.some((d) => d.venda === v.num));
+const CORTE_VENDAS = "2026-11-01";
+const semEntrada = () => vendasVisiveis().filter((v) => (v.data || "") >= CORTE_VENDAS && !S.dem.some((d) => d.venda === v.num));
 // Vendas das vendedoras ainda sem entrada: a casa (Marina e Júnior) só acompanha e cobra.
-const semEntradaVendedoras = () => { if (!casa()) return []; const minhas = vendasVisiveis(); return S.vendas.filter((v) => valorPers(v) > 0 && !minhas.includes(v) && !S.dem.some((d) => d.venda === v.num)).sort((a, b) => (a.data || "").localeCompare(b.data || "")); };
+const semEntradaVendedoras = () => { if (!casa()) return []; const minhas = vendasVisiveis(); return S.vendas.filter((v) => (v.data || "") >= CORTE_VENDAS && valorPers(v) > 0 && !minhas.includes(v) && !S.dem.some((d) => d.venda === v.num)).sort((a, b) => (a.data || "").localeCompare(b.data || "")); };
 function cardVendaVendedora(v) {
   const dias = Math.max(0, diasEntre(v.data, diaISO(HOJE)) - 1);
   return cardVenda(v).replace('<div class="btns">', '<div class="meta"><span class="pill' + (dias >= 2 ? " tag-late" : " st-producao") + '">Esperando ' + esc(nomeDe(v.vend)) + " dar entrada" + (dias ? " há " + dias + (dias > 1 ? " dias" : " dia") : " (venda de hoje)") + "</span></div>" + '<div class="btns">').replace('">Dar entrada</button>', '">Dar entrada por ela</button>').replace('class="btn" data-entrada', 'class="btn ghost" data-entrada');
@@ -779,6 +782,7 @@ function telaVendas() {
     '<div class="section-title"><h2>Para dar entrada</h2><span>' + l.length + " vendas</span></div>" +
     '<div class="list">' + (l.length ? l.map(cardVenda).join("") : '<div class="empty">Tudo em dia. Nenhuma venda esperando entrada.</div>') + "</div>" +
     (() => { const lv = semEntradaVendedoras(); return lv.length ? '<div class="section-title"><h2>Esperando a vendedora dar entrada</h2><span>' + lv.length + (lv.length > 1 ? " vendas" : " venda") + '</span></div><div class="note">Vendas das vendedoras com serviço do Personalizados que elas ainda não lançaram. Dá para cobrar delas, ou dar entrada por elas se precisar.</div><div class="list">' + lv.map(cardVendaVendedora).join("") + "</div>" : ""; })() +
+    (() => { if (U.papel !== "admin") return ""; const n = S.vendas.filter((v) => (v.data || "") >= CORTE_VENDAS && /consumidor/i.test(v.cliente)).length; if (!n) return ""; const i = S.mmInfo || {}; const tx = (i.colunasVendas || []).filter((c) => /:(14|37)$/.test(c)).map((c) => c.split(":")[0]); return '<div class="note" style="margin-top:14px">Só você vê isto: ' + n + (n > 1 ? " vendas ainda vêm" : " venda ainda vem") + ' como Consumidor Direto. Ponte ' + esc(i.versao || "antiga") + ' · coluna do nome: ' + esc(i.colunaNomeCliente || "nenhuma") + ' · colunas de texto da venda: ' + esc(tx.join(", ") || "não lidas") + '</div>'; })() +
     (aguard.length ? '<div class="section-title"><h2>Demandas sem venda</h2><span>' + aguard.length + '</span></div><div class="note">Criadas antes da venda. Quando a venda aparecer com o mesmo nome de cliente, use "Ligar à demanda já criada".</div><div class="list">' + aguard.map(cardDem).join("") + "</div>" : "");
   document.querySelectorAll("[data-entrada]").forEach((b) => (b.onclick = () => {
     const v = S.vendas.find((x) => x.num === b.dataset.entrada);
@@ -942,7 +946,7 @@ function abrirDem(id, abrirEm) {
   const fotos = (t, arr) => (arr && arr.length ? '<div class="photo-prev">' + arr.map((f) => '<img src="' + fu(f) + '" alt="' + t + '"' + (f.id ? ' data-fid="' + esc(f.id) + '"' : "") + (f.nome ? ' data-nome="' + esc(f.nome) + '" data-pasta="' + esc(f.pasta) + '"' : "") + ">").join("") + "</div>" + (arr.some((f) => f.nome) ? '<div class="ph-names">' + arr.filter((f) => f.nome).map((f) => "<span>Drive: <b>" + esc(f.pasta) + "</b> / " + esc(f.nome) + "</span>").join("") + "</div>" : "") : "");
   const itensHTML = d.itens.map((it, k) => '<div class="dem-item" data-ik="' + k + '"><div class="row"><span><b>' + esc(it.desc) + '</b><br><small style="color:var(--muted)">' + esc(it.servico) + (it.valor != null ? " · " + brl(it.valor) : it.orcCf != null ? " · orçado " + brl(it.orcCf) + (it.orcRev !== it.orcCf ? " (revenda " + brl(it.orcRev) + ")" : "") + (it.ajustado ? ", valor ajustado" : "") : "") + "</small></span>" + (["iniciar", "producao", "concluido"].includes(F) ? stItem(it.fase) : "") + "</div>" +
     fotos("Referência", it.anexos) + (it.fotoFinal.length ? '<small style="color:var(--muted)">Foto do produto pronto (toque para ampliar):</small>' + fotos("Produto pronto", it.fotoFinal) : "") +
-    (casa() && ["iniciar", "producao", "concluido"].includes(F) ? '<div class="acts" id="ia' + k + '">' + (it.fase === "iniciar" ? '<button type="button" class="btn" data-ini="' + k + '">Começar produção</button>' : it.fase === "producao" ? '<button type="button" class="btn ghost" data-vol="' + k + '">Voltar para A iniciar</button><button type="button" class="btn" data-pro="' + k + '">Pronto (com foto)</button>' : '<button type="button" class="btn ghost" data-vol="' + k + '">Voltar para produção</button>') + "</div>" : "") + "</div>").join("");
+    (casa() && ["iniciar", "producao", "concluido"].includes(F) ? '<div class="acts" id="ia' + k + '">' + (it.fase === "iniciar" ? '<button type="button" class="btn" data-ini="' + k + '">Começar produção</button>' : it.fase === "producao" ? '<button type="button" class="btn ghost" data-vol="' + k + '">Voltar para A iniciar</button><button type="button" class="btn" data-pro="' + k + '">Pronto</button>' : '<button type="button" class="btn ghost" data-vol="' + k + '">Voltar para produção</button>') + "</div>" : "") + "</div>").join("");
   const el = sheet(esc(d.cliente),
     (F !== "cancelada" ? '<div><div class="steps" style="grid-template-columns:repeat(5,1fr)">' + ORD.map((p, k) => '<div class="' + (k <= i ? "on" : "") + '"></div>').join("") + '</div><div class="steps-l" style="grid-template-columns:repeat(5,1fr);margin-top:4px">' + ["Orçamento", "A iniciar", "Produção", "Pronto", "Entregue"].map((f) => "<span>" + f + "</span>").join("") + "</div></div>" : '<span class="pill f-cancelada">Cancelada</span>') +
     (casa() && atrasada(d) ? '<div class="note" style="background:var(--late-soft);color:var(--late);font-weight:600">Atrasada: a entrega era ' + dataBR(d.prazo) + ".</div>" : "") +
@@ -962,7 +966,7 @@ function abrirDem(id, abrirEm) {
   // ações por item
   el.querySelectorAll("[data-ini]").forEach((b) => (b.onclick = () => { const it = d.itens[+b.dataset.ini]; it.fase = "producao"; registra(d, "Produção iniciada: " + it.desc); }));
   el.querySelectorAll("[data-vol]").forEach((b) => (b.onclick = () => { const it = d.itens[+b.dataset.vol]; it.fase = it.fase === "concluido" ? "producao" : "iniciar"; registra(d, "Voltou para " + ITEM_F[it.fase] + ": " + it.desc); }));
-  el.querySelectorAll("[data-pro]").forEach((b) => (b.onclick = () => { const k = +b.dataset.pro, it = d.itens[k]; pedirFoto($("#ia" + k), "Foto de " + it.desc, true, async (ft) => { const pasta = pastaDe(it.servico), nome = nomeFoto(d, it.desc, pasta); try { const id = await guardarFoto(ft, { pasta, nome, dem: d.id }); it.fotoFinal.push({ id, t: ft.t, nome, pasta }); } catch (er) { return erroGravar(er); } it.fase = "concluido"; registra(d, "Pronto com foto: " + it.desc); }, () => abrirDem(d.id)); }));
+  el.querySelectorAll("[data-pro]").forEach((b) => (b.onclick = () => { const k = +b.dataset.pro, it = d.itens[k]; pedirFoto($("#ia" + k), "Foto de " + it.desc, false, async (ft) => { if (ft) { const pasta = pastaDe(it.servico), nome = nomeFoto(d, it.desc, pasta); try { const id = await guardarFoto(ft, { pasta, nome, dem: d.id }); it.fotoFinal.push({ id, t: ft.t, nome, pasta }); } catch (er) { return erroGravar(er); } } it.fase = "concluido"; registra(d, (ft ? "Pronto com foto: " : "Pronto sem foto: ") + it.desc); }, () => abrirDem(d.id)); }));
   const base = () => {
     let h = "";
     if (F === "orcamento" && !d.orc && casa()) h += '<button type="button" class="btn block" id="aFazOrc">Fazer o orçamento</button>';
