@@ -524,6 +524,8 @@ function montar() {
   S.dem = docs.filter((x) => x.col === "dem").map((x) => Object.assign({ status: null, contato: "", obs: "", interno: false, venda: null, orc: null, fotoEntrega: [], entregueEm: null, retrabalhos: [], hist: [], itens: [] }, clone(x.data), { id: +x.id, _v: x.v }))
     .map((d) => { d.itens.forEach((i) => { i.anexos = i.anexos || []; i.fotoFinal = i.fotoFinal || []; i.fase = i.fase || "iniciar"; }); return d; })
     .sort((a, b) => b.id - a.id);
+  // Demandas de outubro para trás: a Marina disse que já foram feitas e entregues. Saem do controle (contam como entregues).
+  S.dem.forEach((d) => { if (d.data && d.data < "2026-11-01" && !["entregue", "cancelada", "orcamento"].includes(d.status)) { d.status = "entregue"; d.entregueEm = d.entregueEm || d.prazo || d.data; d.itens.forEach((i) => (i.fase = "concluido")); d.antiga = true; } });
   // Cliente 001 "Consumidor Direto": se a venda já tem o nome digitado, mostra esse nome
   S.dem.forEach((d) => { if (!d.venda || !/consumidor/i.test(d.cliente || "")) return; const v = S.vendas.find((x) => x.num === String(d.venda)); if (v && v.cliente && !/consumidor|sem nome/i.test(v.cliente)) d.cliente = v.cliente; });
   S.avisos = docs.filter((x) => x.col === "aviso").map((x) => Object.assign(clone(x.data), { _id: x.id, _v: x.v })).sort((a, b) => (b.quando || "").localeCompare(a.quando || ""));
@@ -768,7 +770,8 @@ function menuMais() {
 // ===================== Vendas sem entrada =====================
 function cardVenda(v) {
   const its = v.itens.filter((i) => REFS.includes(i.ref));
-  const sug = S.dem.find((d) => !d.venda && !d.interno && d.status !== "cancelada" && !(d.status === "orcamento" && !d.orc) && norm(d.cliente) === norm(v.cliente));
+  const sug = S.dem.filter((d) => !d.venda && !d.interno && !["cancelada", "entregue"].includes(d.status) && !(d.status === "orcamento" && !d.orc) && parecido(d.cliente, v.cliente))
+    .sort((a, b) => parecido(b.cliente, v.cliente) - parecido(a.cliente, v.cliente) || Math.abs(diasEntre(a.data || v.data, v.data)) - Math.abs(diasEntre(b.data || v.data, v.data)))[0];
   return '<div class="card"><div class="row"><div class="cli">' + esc(titulo(v.cliente)) + '</div><b class="num">' + brl(valorPers(v)) + "</b></div>" +
     '<div class="meta"><span>Venda <b>' + v.num + "</b></span><span>" + dataBR(v.data) + "</span><span>Vendedor <b>" + esc(nomeDe(v.vend)) + "</b></span><span>" + (v.faturada ? "Faturada" : '<b style="color:var(--warn)">Pré-venda</b>') + "</span></div>" +
     '<div class="itens">' + its.map((i) => "<div><span>" + esc(titulo(i.desc)) + '<br><span class="ref">' + i.ref + " · " + SERV[i.ref] + '</span></span><b class="num">' + brl(i.valor) + "</b></div>").join("") + "</div>" +
@@ -783,7 +786,7 @@ function telaVendas() {
     '<div class="list">' + (l.length ? l.map(cardVenda).join("") : '<div class="empty">Tudo em dia. Nenhuma venda esperando entrada.</div>') + "</div>" +
     (() => { const lv = semEntradaVendedoras(); return lv.length ? '<div class="section-title"><h2>Esperando a vendedora dar entrada</h2><span>' + lv.length + (lv.length > 1 ? " vendas" : " venda") + '</span></div><div class="note">Vendas das vendedoras com serviço do Personalizados que elas ainda não lançaram. Dá para cobrar delas, ou dar entrada por elas se precisar.</div><div class="list">' + lv.map(cardVendaVendedora).join("") + "</div>" : ""; })() +
     (() => { if (U.papel !== "admin") return ""; const n = S.vendas.filter((v) => (v.data || "") >= CORTE_VENDAS && /consumidor/i.test(v.cliente)).length; if (!n) return ""; const i = S.mmInfo || {}; const tx = (i.colunasVendas || []).filter((c) => /:(14|37)$/.test(c)).map((c) => c.split(":")[0]); return '<div class="note" style="margin-top:14px">Só você vê isto: ' + n + (n > 1 ? " vendas ainda vêm" : " venda ainda vem") + ' como Consumidor Direto. Ponte ' + esc(i.versao || "antiga") + ' · coluna do nome: ' + esc(i.colunaNomeCliente || "nenhuma") + ' · colunas de texto da venda: ' + esc(tx.join(", ") || "não lidas") + '</div>'; })() +
-    (aguard.length ? '<div class="section-title"><h2>Demandas sem venda</h2><span>' + aguard.length + '</span></div><div class="note">Criadas antes da venda. Quando a venda aparecer com o mesmo nome de cliente, use "Ligar à demanda já criada".</div><div class="list">' + aguard.map(cardDem).join("") + "</div>" : "");
+    (aguard.length ? '<div class="section-title"><h2>Demandas sem venda</h2><span>' + aguard.length + '</span></div><div class="note">Criadas antes da venda. Quando a venda aparecer, use "Ligar à demanda já criada" na venda, ou abra a demanda e toque em "Ligar à venda do sistema".</div><div class="list">' + aguard.map(cardDem).join("") + "</div>" : "");
   document.querySelectorAll("[data-entrada]").forEach((b) => (b.onclick = () => {
     const v = S.vendas.find((x) => x.num === b.dataset.entrada);
     novaDemanda({ venda: v.num, cliente: titulo(v.cliente), vend: v.vend, data: v.data, agora: "iniciar", itens: v.itens.filter((i) => REFS.includes(i.ref)).map((i) => ({ servico: SERV[i.ref], desc: titulo(i.desc), valor: i.valor, ref: i.ref, anexos: [] })) });
@@ -972,6 +975,8 @@ function abrirDem(id, abrirEm) {
     if (F === "orcamento" && !d.orc && casa()) h += '<button type="button" class="btn block" id="aFazOrc">Fazer o orçamento</button>';
     if (F === "orcamento" && d.orc) h += '<button type="button" class="btn block" id="aCli">Mandar para o cliente (WhatsApp ou PDF)</button>';
     if (F === "orcamento" && d.orc && (casa() || minha(d))) h += '<button type="button" class="btn ghost block" id="aLiga">Cliente fechou: ligar à venda do sistema</button>';
+    if (!d.venda && !d.interno && ["iniciar", "producao", "concluido"].includes(F) && (casa() || minha(d))) h += '<button type="button" class="btn ghost block" id="aLiga">Ligar à venda do sistema</button>';
+    if (!d.venda && !d.interno && F !== "cancelada" && casa()) h += '<button type="button" class="btn ghost block" id="aInt">Não tem venda: é demanda interna da loja</button>';
     if (casa() && ["iniciar", "producao"].includes(F)) h += '<div class="note"><b>Produção:</b> ' + (d.prodIni ? dataBR(d.prodIni) + (d.prodFim && d.prodFim !== d.prodIni ? " a " + dataBR(d.prodFim) : "") + " (" + diasEntre(d.prodIni, d.prodFim) + (diasEntre(d.prodIni, d.prodFim) > 1 ? " dias" : " dia") + ")" : '<span style="color:var(--warn)">ainda não programada</span>') + '</div><button type="button" class="btn ghost block" id="aProg">' + (d.prodIni ? "Mudar dias de produção" : "Programar produção") + "</button>";
     if (F === "concluido" && (casa() || minha(d))) h += '<button type="button" class="btn block" id="aEnt">Entregue ao cliente</button>';
     if (F === "entregue" && casa()) h += '<button type="button" class="btn danger block" id="aRe">Retrabalho: o cliente voltou</button><button type="button" class="btn ghost block" id="aDes">Desfazer entrega</button>';
@@ -980,6 +985,7 @@ function abrirDem(id, abrirEm) {
     if ($("#aFazOrc")) $("#aFazOrc").onclick = () => { const volta = tela; fecharSheet(); novoOrc(tipoDe(d.itens[0].servico), { cliente: d.cliente, vend: d.vend, prazo: d.prazo, pedidoId: d.id }); form = { voltar: volta }; tela = "orcar"; render(); window.scrollTo(0, 0); };
     if ($("#aCli")) $("#aCli").onclick = () => mandarCliente(d);
     if ($("#aLiga")) $("#aLiga").onclick = () => ligarVenda(d);
+    if ($("#aInt")) $("#aInt").onclick = () => { d.interno = true; d.hist.push([diaISO(HOJE), "Marcada como demanda interna, sem venda no sistema (" + U.nome + ")"]); salvarDem(d).then(() => { toast("Pronto. Esta demanda é interna e não espera venda."); fecharSheet(); render(); }).catch(erroGravar); };
     if ($("#aProg")) $("#aProg").onclick = () => {
       const ini = d.prodIni || diaISO(HOJE), fim = d.prodFim || ini;
       acao.innerHTML = '<div class="form"><div class="lbl">Dias de produção</div>' + progCampos(ini, fim, !d.prodIni) + '<div class="btns"><button type="button" class="btn ghost" id="pgV">Voltar</button><button type="button" class="btn" id="pgO">Salvar</button></div></div>';
@@ -1061,13 +1067,21 @@ function pdfOrcamento(d, tab) {
   toast("Na janela que abrir, escolha \"Salvar como PDF\".");
   setTimeout(() => window.print(), 300);
 }
+function parecido(a, b) {
+  const x = norm(a || ""), y = norm(b || ""); if (!x || !y || /consumidor/.test(x) || /consumidor/.test(y)) return 0;
+  if (x === y) return 3;
+  if ((x.length >= 4 && y.includes(x)) || (y.length >= 4 && x.includes(y))) return 2;
+  const p = x.split(/\s+/)[0], q = y.split(/\s+/)[0]; return p.length >= 3 && p === q ? 1 : 0;
+}
 function ligarVenda(d) {
-  const l = S.vendas.filter((v) => valorPers(v) > 0 && !S.dem.some((x) => x.venda === v.num) && (casa() || v.vend === U.id))
-    .sort((a, b) => (norm(b.cliente) === norm(d.cliente)) - (norm(a.cliente) === norm(d.cliente)) || b.data.localeCompare(a.data));
-  const el = sheet("Qual é a venda de " + esc(d.cliente) + "?", '<div class="note">Faça a venda no My Manager. Ela aparece aqui em poucos minutos. Toque na venda certa para ligar o orçamento nº ' + d.id + ".</div>" +
-    (l.length ? '<div class="list">' + l.map((v) => '<button type="button" class="card" data-lv="' + v.num + '"><div class="row"><div class="cli">' + esc(titulo(v.cliente)) + (norm(v.cliente) === norm(d.cliente) ? ' <span class="pill tag-mine">mesmo nome</span>' : "") + '</div><b class="num">' + brl(valorPers(v)) + '</b></div><div class="meta"><span>Venda <b>' + v.num + "</b></span><span>" + dataBR(v.data) + "</span><span>" + esc(nomeDe(v.vend)) + "</span></div></button>").join("") + "</div>" : '<div class="empty">Nenhuma venda sem entrada agora. Se você acabou de lançar, espere uns minutos.</div>'));
+  const ativa = d.status !== "orcamento";
+  const l = S.vendas.filter((v) => (v.data || "") >= CORTE_VENDAS && valorPers(v) > 0 && !S.dem.some((x) => x.venda === v.num) && (casa() || v.vend === U.id))
+    .sort((a, b) => parecido(d.cliente, b.cliente) - parecido(d.cliente, a.cliente) || Math.abs(diasEntre(d.data || a.data, a.data)) - Math.abs(diasEntre(d.data || b.data, b.data)) || b.data.localeCompare(a.data));
+  const el = sheet("Qual é a venda de " + esc(d.cliente) + "?", '<div class="note">Faça a venda no My Manager. Ela aparece aqui em poucos minutos. Toque na venda certa para ligar ' + (ativa ? "a demanda" : "o orçamento") + " nº " + d.id + ".</div>" +
+    (l.length ? '<div class="list">' + l.map((v) => '<button type="button" class="card" data-lv="' + v.num + '"><div class="row"><div class="cli">' + esc(titulo(v.cliente)) + (parecido(v.cliente, d.cliente) ? ' <span class="pill tag-mine">' + (parecido(v.cliente, d.cliente) === 3 ? "mesmo nome" : "nome parecido") + "</span>" : "") + (v.data === d.data ? ' <span class="pill st-producao">mesmo dia</span>' : "") + '</div><b class="num">' + brl(valorPers(v)) + '</b></div><div class="meta"><span>Venda <b>' + v.num + "</b></span><span>" + dataBR(v.data) + "</span><span>" + esc(nomeDe(v.vend)) + "</span></div></button>").join("") + "</div>" : '<div class="empty">Nenhuma venda sem entrada agora. Se você acabou de lançar, espere uns minutos.</div>'));
   el.querySelectorAll("[data-lv]").forEach((b) => (b.onclick = () => {
     const v = S.vendas.find((x) => x.num === b.dataset.lv);
+    if (ativa) { d.venda = v.num; d.hist.push([diaISO(HOJE), "Ligada à venda " + v.num + " (" + U.nome + ")"]); fecharSheet(); salvarDem(d).then(() => { toast("Venda " + v.num + " ligada à demanda de " + d.cliente + "."); render(); }).catch(erroGravar); return; }
     const its = v.itens.filter((i) => REFS.includes(i.ref));
     d.itens = its.map((i) => { const igual = d.itens.find((o) => o.servico === SERV[i.ref]); return { id: uid(), servico: SERV[i.ref], desc: titulo(i.desc), valor: i.valor, ref: i.ref, anexos: igual ? igual.anexos : [], fase: "iniciar", fotoFinal: [], orcCf: igual ? igual.orcCf : null, orcRev: igual ? igual.orcRev : null }; });
     d.venda = v.num; d.status = null; d.vend = v.vend; d.data = v.data; d.prazo = somaDias(5);
