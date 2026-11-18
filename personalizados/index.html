@@ -1153,7 +1153,7 @@ function telaOrcar() {
         if (para && para !== U.id) await gravarDoc("aviso", uid(), { para, txt: "Orçamento pronto: " + ped.cliente + " (" + brl(tot.cf) + ")", dem: ped.id, lido: false, quando: diaISO(HOJE), tipo: "orc" }).catch(() => {});
         toast("Orçamento nº " + id + " pronto." + (para && para !== U.id ? " " + nomeDe(para) + " recebeu o aviso para mandar ao cliente." : ""));
         orc = null; tela = "acomp"; form = null; render(); window.scrollTo(0, 0);
-        orcParaPlanilha(id); return;
+        orcParaPlanilha(id, true); return;
       }
       const d = { id, cliente: orc.cliente.trim(), vend: orc.vend, criadoPor: U.id, data: diaISO(HOJE), prazo: orc.prazo, status: "orcamento", orc: { tipo: tipos.length > 1 ? "com " + tipos.length + " tipos" : tipos[0], cf: ROUND1(tot.cf), rev: ROUND1(tot.rev), planilha: false },
         itens: novosItens,
@@ -1161,19 +1161,19 @@ function telaOrcar() {
       await salvarDem(d);
       toast("Orçamento nº " + id + " salvo com " + orc.itens.length + (orc.itens.length > 1 ? " itens" : " item") + ". Está no Acompanhamento e na agenda.");
       orc = null; tela = "acomp"; form = null; render(); window.scrollTo(0, 0);
-      orcParaPlanilha(id);
+      orcParaPlanilha(id, true);
     } catch (er) { bt.dataset.ok = ""; bt.textContent = "Salvar orçamento"; erroGravar(er); }
   }
 }
 // Manda o orçamento para as planilhas (cada item na planilha do seu tipo). Se não der, fica pendente.
-async function orcParaPlanilha(id) {
+async function orcParaPlanilha(id, avisar) {
   const d = S.dem.find((x) => x.id === id); if (!d || !d.orc || d.orc.planilha || !S.google || !S.google.url) return false;
   try {
     await enviarGoogle({ acao: "orcamento", numero: d.id, data: d.data, cliente: d.cliente, vendedor: nomeDe(d.vend), feitoPor: nomeDe(d.criadoPor), responderAte: d.prazo,
       itens: d.itens.map((i) => ({ tipo: i.tipo || ({ "Impressão": "imp", "Corte a laser": "las", "Bordado": "bor", "Gravação UV": "grav" }[i.servico]), servico: i.servico, desc: i.desc, det: i.det || "", cf: i.orcCf, rev: i.orcRev, ajustado: !!i.ajustado })) });
     const x = S.dem.find((y) => y.id === id); x.orc.planilha = true; x.hist.push([diaISO(HOJE), "Orçamento lançado nas planilhas"]); await salvarDem(x);
     return true;
-  } catch (e) { return false; }
+  } catch (e) { S.erroGoogle = (e && e.message) || "sem resposta do Google"; if (avisar) toast("O orçamento ficou salvo no app, mas não foi para a planilha. Motivo: " + S.erroGoogle); return false; }
 }
 function calculadora() {
   document.querySelectorAll("#oAbas [data-a]").forEach((b) => (b.onclick = () => { ler(); orcTipo = b.dataset.a; telaOrcar(); }));
@@ -1442,7 +1442,7 @@ function telaPrecos() {
     '<div class="lbl">Gravação UV (R$ por unidade)</div><div class="grid2">' + LAB.map(([k, t]) => '<div class="field"><label for="pg_' + k + '">' + t + '</label><input id="pg_' + k + '" type="number" min="0" step="0.5" inputmode="decimal" value="' + G[k] + '"></div>').join("") + '</div><small style="color:var(--muted)">"Outro" não tem preço na tabela: quem faz o orçamento digita o valor.</small>' +
     '<button class="btn" type="submit">Salvar preços</button></form>' +
     '<form class="form" id="fGo" autocomplete="off"><div class="lbl">Ligação com o Google (planilhas e fotos no Drive)</div><div class="field"><label for="gUrl">Endereço do app do Google</label><input id="gUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" value="' + esc((S.google && S.google.url) || "") + '"><small>' + (S.google && S.google.url ? "Ligado." : "Ainda não ligado. Os orçamentos e as fotos ficam guardados no app e vão para o Drive depois.") + '</small></div><div class="btns"><button class="btn ghost" type="button" id="gTeste">Testar</button><button class="btn" type="submit">Salvar endereço</button></div>' +
-    (pend.length ? '<div class="note" style="background:var(--warn-soft);color:var(--warn)">' + pend.length + (pend.length > 1 ? " orçamentos ainda não foram" : " orçamento ainda não foi") + ' para as planilhas.</div><button class="btn ghost" type="button" id="gPend">Mandar para as planilhas agora</button>' : "") + "</form>";
+    (pend.length ? '<div class="note" style="background:var(--warn-soft);color:var(--warn)">' + pend.length + (pend.length > 1 ? " orçamentos ainda não foram" : " orçamento ainda não foi") + " para as planilhas." + (S.erroGoogle ? "<br>Último erro: " + esc(S.erroGoogle) : "") + '</div><button class="btn ghost" type="button" id="gPend">Mandar para as planilhas agora</button>' : "") + "</form>";
   $("#fPr").onsubmit = async (e) => {
     e.preventDefault(); const g = {}; LAB.forEach(([k]) => (g[k] = +$("#pg_" + k).value || 0));
     try { await gravarDoc("cfg", "precos", { bordadoMil: +$("#prB").value || 0, bordadoMin: +$("#prBm").value || 0, grav: g }); toast("Preços salvos. Os próximos orçamentos já usam os valores novos."); } catch (er) { erroGravar(er); }
@@ -1461,7 +1461,7 @@ function telaPrecos() {
   if ($("#gPend")) $("#gPend").onclick = async (e) => {
     e.currentTarget.disabled = true; e.currentTarget.textContent = "Mandando...";
     let ok = 0; for (const d of pend) if (await orcParaPlanilha(d.id)) ok++;
-    toast(ok + " de " + pend.length + " foram para as planilhas."); telaPrecos();
+    toast(ok + " de " + pend.length + " foram para as planilhas." + (ok < pend.length && S.erroGoogle ? " Motivo: " + S.erroGoogle : "")); telaPrecos();
   };
 }
 
