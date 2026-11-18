@@ -533,8 +533,9 @@ function montar() {
     .sort((a, b) => b.id - a.id);
   // Demandas de outubro para trás: a Marina disse que já foram feitas e entregues. Saem do controle (contam como entregues).
   S.dem.forEach((d) => { if (d.data && d.data < "2026-11-01" && !["entregue", "cancelada", "orcamento"].includes(d.status)) { d.status = "entregue"; d.entregueEm = d.entregueEm || d.prazo || d.data; d.itens.forEach((i) => (i.fase = "concluido")); d.antiga = true; } });
-  // Cliente 001 "Consumidor Direto": se a venda já tem o nome digitado, mostra esse nome
-  S.dem.forEach((d) => { if (!d.venda || !/consumidor/i.test(d.cliente || "")) return; const v = S.vendas.find((x) => x.num === String(d.venda)); if (v && v.cliente && !/consumidor|sem nome/i.test(v.cliente)) d.cliente = v.cliente; });
+  // Demanda ligada a uma venda: o nome do cliente é o da venda no sistema (pedido da Marina, 18/11).
+  // Se a venda é do Consumidor Direto sem nome digitado, fica o nome da demanda.
+  S.dem.forEach((d) => { if (!d.venda) return; const v = S.vendas.find((x) => x.num === String(d.venda)); if (v && v.cliente && !/consumidor|sem nome/i.test(v.cliente) && norm(v.cliente) !== norm(d.cliente)) d.cliente = titulo(v.cliente); });
   S.avisos = docs.filter((x) => x.col === "aviso").map((x) => Object.assign(clone(x.data), { _id: x.id, _v: x.v })).sort((a, b) => (b.quando || "").localeCompare(a.quando || ""));
   const pr = docs.find((x) => x.col === "cfg" && x.id === "precos");
   S.precos = { bordadoMil: 2, bordadoMin: 20, grav: Object.assign({}, GRAV_PADRAO) };
@@ -801,7 +802,7 @@ function telaVendas() {
   document.querySelectorAll("[data-ligar]").forEach((b) => (b.onclick = () => {
     const v = S.vendas.find((x) => x.num === b.dataset.ligar), d = S.dem.find((x) => x.id === +b.dataset.dem);
     if (d.status === "orcamento") { d.itens = v.itens.filter((i) => REFS.includes(i.ref)).map((i) => { const igual = d.itens.find((o) => o.servico === SERV[i.ref]); return { id: uid(), servico: SERV[i.ref], desc: titulo(i.desc), valor: i.valor, ref: i.ref, anexos: igual ? igual.anexos : [], fase: "iniciar", fotoFinal: [], orcCf: igual ? igual.orcCf : null, orcRev: igual ? igual.orcRev : null }; }); d.status = null; d.vend = v.vend; d.data = v.data; d.prazo = d.prazo < diaISO(HOJE) ? somaDias(5) : d.prazo; }
-    d.venda = v.num; d.hist.push([diaISO(HOJE), "Ligada à venda " + v.num + " (" + U.nome + ")"]); salvarDem(d).then(() => { toast("Venda " + v.num + " ligada à demanda de " + d.cliente + "."); render(); }).catch(erroGravar);
+    d.venda = v.num; if (v.cliente && !/consumidor|sem nome/i.test(v.cliente) && norm(v.cliente) !== norm(d.cliente)) { d.hist.push([diaISO(HOJE), "Nome mudou de " + d.cliente + " para " + titulo(v.cliente) + " (nome da venda)"]); d.cliente = titulo(v.cliente); } d.hist.push([diaISO(HOJE), "Ligada à venda " + v.num + " (" + U.nome + ")"]); salvarDem(d).then(() => { toast("Venda " + v.num + " ligada à demanda de " + d.cliente + "."); render(); }).catch(erroGravar);
     if (casa() && !d.prodIni && ["iniciar", "producao"].includes(fase(d))) editarProducao(d, true);
   }));
   document.querySelectorAll("[data-d]").forEach((b) => (b.onclick = () => abrirDem(+b.dataset.d)));
@@ -1096,10 +1097,10 @@ function ligarVenda(d) {
     const v = S.vendas.find((x) => x.num === b.dataset.lv), o = outra(v);
     if (o && !b.dataset.conf) { b.dataset.conf = "1"; b.querySelector(".tag-late").textContent = "Toque de novo para juntar: a demanda nº " + o.id + " fica cancelada e a venda " + v.num + " vem para esta."; return; }
     if (o) { o.venda = null; o.status = "cancelada"; o.hist.push([diaISO(HOJE), "Juntada na demanda nº " + d.id + " (venda " + v.num + ") (" + U.nome + ")"]); salvarDem(o).catch(erroGravar); }
-    if (ativa) { d.venda = v.num; d.hist.push([diaISO(HOJE), "Ligada à venda " + v.num + " (" + U.nome + ")"]); fecharSheet(); salvarDem(d).then(() => { toast("Venda " + v.num + " ligada à demanda de " + d.cliente + "."); render(); }).catch(erroGravar); return; }
+    if (ativa) { d.venda = v.num; if (v.cliente && !/consumidor|sem nome/i.test(v.cliente) && norm(v.cliente) !== norm(d.cliente)) { d.hist.push([diaISO(HOJE), "Nome mudou de " + d.cliente + " para " + titulo(v.cliente) + " (nome da venda)"]); d.cliente = titulo(v.cliente); } d.hist.push([diaISO(HOJE), "Ligada à venda " + v.num + " (" + U.nome + ")"]); fecharSheet(); salvarDem(d).then(() => { toast("Venda " + v.num + " ligada à demanda de " + d.cliente + "."); render(); }).catch(erroGravar); return; }
     const its = v.itens.filter((i) => REFS.includes(i.ref));
     d.itens = its.map((i) => { const igual = d.itens.find((o) => o.servico === SERV[i.ref]); return { id: uid(), servico: SERV[i.ref], desc: titulo(i.desc), valor: i.valor, ref: i.ref, anexos: igual ? igual.anexos : [], fase: "iniciar", fotoFinal: [], orcCf: igual ? igual.orcCf : null, orcRev: igual ? igual.orcRev : null }; });
-    d.venda = v.num; d.status = null; d.vend = v.vend; d.data = v.data; d.prazo = somaDias(5);
+    d.venda = v.num; if (v.cliente && !/consumidor|sem nome/i.test(v.cliente)) d.cliente = titulo(v.cliente); d.status = null; d.vend = v.vend; d.data = v.data; d.prazo = somaDias(5);
     const feito = registra(d, "Cliente fechou. Ligado à venda " + v.num + ", foi para A iniciar");
     toast("Orçamento nº " + d.id + " ligado à venda " + v.num + ". Agora está em A iniciar. Combine a data de entrega em Editar.");
     if (casa() && !d.prodIni) Promise.resolve(feito).then(() => editarProducao(d, true));
