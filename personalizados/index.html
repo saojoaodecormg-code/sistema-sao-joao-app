@@ -989,7 +989,7 @@ function abrirDem(id, abrirEm) {
     let h = "";
     if (F === "orcamento" && !d.orc && casa()) h += '<button type="button" class="btn block" id="aFazOrc">Fazer o orçamento</button>';
     if (F === "orcamento" && d.orc) h += '<button type="button" class="btn block" id="aCli">Mandar para o cliente (WhatsApp ou PDF)</button>';
-    if (F === "orcamento" && d.orc && (casa() || minha(d))) h += '<button type="button" class="btn ghost block" id="aLiga">Cliente fechou: ligar à venda do sistema</button>';
+    if (F === "orcamento" && d.orc && (casa() || minha(d))) h += '<button type="button" class="btn ghost block" id="aLiga">Cliente fechou: ligar à venda do sistema</button><button type="button" class="btn ghost block" id="aSemVenda">Cliente fechou: começar sem venda no sistema</button>';
     if (!d.venda && !d.interno && ["iniciar", "producao", "concluido"].includes(F) && (casa() || minha(d))) h += '<button type="button" class="btn ghost block" id="aLiga">Ligar à venda do sistema</button>';
     if (!d.venda && !d.interno && F !== "cancelada" && casa()) h += '<button type="button" class="btn ghost block" id="aInt">Não tem venda: é demanda interna da loja</button>';
     if (casa() && ["iniciar", "producao"].includes(F)) h += '<div class="note"><b>Produção:</b> ' + (d.prodIni ? dataBR(d.prodIni) + (d.prodFim && d.prodFim !== d.prodIni ? " a " + dataBR(d.prodFim) : "") + " (" + diasEntre(d.prodIni, d.prodFim) + (diasEntre(d.prodIni, d.prodFim) > 1 ? " dias" : " dia") + ")" : '<span style="color:var(--warn)">ainda não programada</span>') + '</div><button type="button" class="btn ghost block" id="aProg">' + (d.prodIni ? "Mudar dias de produção" : "Programar produção") + "</button>";
@@ -1000,6 +1000,7 @@ function abrirDem(id, abrirEm) {
     if ($("#aFazOrc")) $("#aFazOrc").onclick = () => { const volta = tela; fecharSheet(); novoOrc(tipoDe(d.itens[0].servico), { cliente: d.cliente, vend: d.vend, prazo: d.prazo, pedidoId: d.id }); form = { voltar: volta }; tela = "orcar"; render(); window.scrollTo(0, 0); };
     if ($("#aCli")) $("#aCli").onclick = () => mandarCliente(d);
     if ($("#aLiga")) $("#aLiga").onclick = () => ligarVenda(d);
+    if ($("#aSemVenda")) $("#aSemVenda").onclick = () => { d.status = null; d.itens.forEach((x) => (x.fase = "iniciar")); if (!d.prazo) d.prazo = somaDias(5); const feito = registra(d, "Cliente fechou. Foi para A iniciar sem venda no sistema (ligar à venda depois)"); toast("Orçamento nº " + d.id + " virou demanda em A iniciar. Quando a venda for feita, ligue em Vendas ou na demanda."); if (casa() && !d.prodIni) Promise.resolve(feito).then(() => editarProducao(d, true)); };
     if ($("#aInt")) $("#aInt").onclick = () => { d.interno = true; d.hist.push([diaISO(HOJE), "Marcada como demanda interna, sem venda no sistema (" + U.nome + ")"]); salvarDem(d).then(() => { toast("Pronto. Esta demanda é interna e não espera venda."); fecharSheet(); render(); }).catch(erroGravar); };
     if ($("#aProg")) $("#aProg").onclick = () => {
       const ini = d.prodIni || diaISO(HOJE), fim = d.prodFim || ini;
