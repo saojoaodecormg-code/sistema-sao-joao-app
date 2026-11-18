@@ -967,7 +967,7 @@ function abrirDem(id, abrirEm) {
     (F !== "cancelada" ? '<div><div class="steps" style="grid-template-columns:repeat(5,1fr)">' + ORD.map((p, k) => '<div class="' + (k <= i ? "on" : "") + '"></div>').join("") + '</div><div class="steps-l" style="grid-template-columns:repeat(5,1fr);margin-top:4px">' + ["Orçamento", "A iniciar", "Produção", "Pronto", "Entregue"].map((f) => "<span>" + f + "</span>").join("") + "</div></div>" : '<span class="pill f-cancelada">Cancelada</span>') +
     (casa() && atrasada(d) ? '<div class="note" style="background:var(--late-soft);color:var(--late);font-weight:600">Atrasada: a entrega era ' + dataBR(d.prazo) + ".</div>" : "") +
     (d.pedido && !d.orc ? '<div class="note" style="background:var(--warn-soft);color:var(--warn)"><b>Pedido de orçamento</b> de ' + esc(nomeDe(d.criadoPor)) + ". Responder até " + dataBR(d.prazo) + ".</div>" : "") +
-    '<div class="lbl">' + (d.pedido && !d.orc ? "O que o cliente quer" : "Itens (" + d.itens.length + ")") + "</div>" + itensHTML +
+    '<div class="lbl">' + (d.pedido && !d.orc ? "O que o cliente quer" : "Itens (" + d.itens.length + ")") + "</div>" + (casa() && ["iniciar", "producao"].includes(F) ? (() => { const ni = d.itens.filter((x) => x.fase === "iniciar").length, np = d.itens.filter((x) => x.fase === "producao").length; return ni >= 2 || np >= 2 ? '<div class="btns" style="margin:2px 0 8px">' + (ni >= 2 ? '<button type="button" class="btn" id="aIniTodos">Começar todos (' + ni + ")</button>" : "") + (np >= 2 ? '<button type="button" class="btn" id="aProTodos">Pronto em todos (' + np + ")</button>" : "") + "</div>" : ""; })() : "") + itensHTML +
     (d.pedidoItens ? '<details class="note"><summary>Pedido original de ' + esc(nomeDe(d.criadoPor)) + "</summary>" + d.pedidoItens.map((i) => esc(i.servico) + ": " + esc(i.desc)).join("<br>") + fotos("Referência", d.pedidoItens.flatMap((i) => i.anexos)) + "</details>" : "") +
     '<div class="kv"><div><span>Vendedor da nota</span><b>' + esc(nomeDe(d.vend)) + "</b></div>" + (d.contato ? "<div><span>Contato</span><b>" + esc(d.contato) + "</b></div>" : "") +
     "<div><span>Data do pedido</span><b>" + dataBR(d.data) + "</b></div><div><span>Entrega combinada</span><b>" + dataBR(d.prazo) + "</b></div>" + (d.entregueEm ? "<div><span>Entregue em</span><b>" + dataBR(d.entregueEm) + "</b></div>" : "") +
@@ -981,6 +981,8 @@ function abrirDem(id, abrirEm) {
   const acao = $("#acao");
   // ações por item
   el.querySelectorAll("[data-ini]").forEach((b) => (b.onclick = () => { const it = d.itens[+b.dataset.ini]; it.fase = "producao"; registra(d, "Produção iniciada: " + it.desc); }));
+  if (el.querySelector("#aIniTodos")) el.querySelector("#aIniTodos").onclick = () => { const l = d.itens.filter((x) => x.fase === "iniciar"); l.forEach((x) => (x.fase = "producao")); registra(d, "Produção iniciada: " + l.map((x) => x.desc).join(", ")); };
+  if (el.querySelector("#aProTodos")) el.querySelector("#aProTodos").onclick = () => { const l = d.itens.filter((x) => x.fase === "producao"); l.forEach((x) => (x.fase = "concluido")); registra(d, "Pronto sem foto: " + l.map((x) => x.desc).join(", ")); };
   el.querySelectorAll("[data-vol]").forEach((b) => (b.onclick = () => { const it = d.itens[+b.dataset.vol]; it.fase = it.fase === "concluido" ? "producao" : "iniciar"; registra(d, "Voltou para " + ITEM_F[it.fase] + ": " + it.desc); }));
   el.querySelectorAll("[data-pro]").forEach((b) => (b.onclick = () => { const k = +b.dataset.pro, it = d.itens[k]; pedirFoto($("#ia" + k), "Foto de " + it.desc, false, async (ft) => { if (ft) { const pasta = pastaDe(it.servico), nome = nomeFoto(d, it.desc, pasta); try { const id = await guardarFoto(ft, { pasta, nome, dem: d.id }); it.fotoFinal.push({ id, t: ft.t, nome, pasta }); } catch (er) { return erroGravar(er); } } it.fase = "concluido"; registra(d, (ft ? "Pronto com foto: " : "Pronto sem foto: ") + it.desc); }, () => abrirDem(d.id)); }));
   const base = () => {
@@ -1047,6 +1049,7 @@ async function registra(d, txt) {
     toast(msg);
   } catch (e) { erroGravar(e); }
   fecharSheet(); render();
+  if (/^(Produção iniciada|Pronto com foto|Pronto sem foto|Voltou para)/.test(txt) && fase(d) !== "concluido") abrirDem(d.id);
 }
 
 // ===================== Orçamento para o cliente e ligação com a venda =====================
